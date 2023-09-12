@@ -80,6 +80,7 @@ FastAPI 的優點：
 - 豐富文件與社群
     - [FastAPI document](https://fastapi.tiangolo.com/) 提供許多教學與範例
     - 也有許多人整合 FastAPI 與其他套件，例如：
+        - [FastAPI-users](https://github.com/fastapi-users/fastapi-users)
         - [FastAPI-redis-cache](https://github.com/a-luna/fastapi-redis-cache)
         - [FastAPI-auth](https://github.com/dmontagu/fastapi-auth)
         - [FastAPI-security](https://github.com/jacobsvante/fastapi-security)
