@@ -31,11 +31,11 @@ uvicorn main:app --reload --host 0.0.0.0 --port 5002
 ```
 
 應該會看到以下的結果
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/uvicorn-start.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day03/uvicorn-start.png)
 
 接著打開瀏覽器，輸入 `http://localhost:5002` <br>
 可以看到 Swagger UI 的介面
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/swagger.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day03/swagger.png)
 
 我們會在明天再細講 FastAPI 的架構
 
@@ -144,7 +144,7 @@ def get_settings():
 只有在第一次跑到 `get_settings()` 時才會去載入 `.env` 檔案，接下來都會從 cache 回傳 `Setting()` 的 instance <br>
 可以參考一下圖片 <br>
 
-![lru cache with setting object](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/lru-cache.png)
+![lru cache with setting object](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day03/lru-cache.png)
 
 ( 截自 [FastAPI Advanced setting : creating the settings only once with lru_cache](https://fastapi.tiangolo.com/advanced/settings/#creating-the-settings-only-once-with-lru_cache) )
 
@@ -232,7 +232,7 @@ def get_infor():
 python run.py --dev
 ```
 執行結果
-![start server in dev mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/start-server-dev.png)
+![start server in dev mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day03/start-server-dev.png)
 
 以 `curl` 測試 `/infor` API
 ```bash
@@ -250,7 +250,7 @@ python run.py --prod
 ```
 
 執行結果
-![start server in prod mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/start-server-prod.png)
+![start server in prod mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day03/start-server-prod.png)
 
 以 `curl` 測試 `/infor` API
 ```bash
