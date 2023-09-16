@@ -13,16 +13,16 @@ FastAPI 是由 ：
 
 - 在 [web framework benchmark](https://web-frameworks-benchmark.netlify.app/result?asc=0&f=fastapi,django,flask&metric=percentile50&order_by=level64) 中查詢這三個框架的比較，可見 FastAPI 比 django / flask 快上約 5 ~ 10 倍
     - 在 Request / Second 的圖表：
-        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day01/assets/Day01/comparison-req-sec.png)
+        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/comparison-req-sec.png)
     - 在 Average Latency 的圖表：
-        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day01/assets/Day01/comparison-avg.png)
+        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/comparison-avg.png)
 
 
 ### 內建支援 OpenAPI (Swagger) 規範
 跑起 FastAPI 後，可以在 `http://localhost:port/docs` 看到 Swagger UI <br>
 在開發初期測試時非常方便！
 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day01/assets/Day01/swagger-ui.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/swagger-ui.png)
 
 ### 內建型別檢查
 
