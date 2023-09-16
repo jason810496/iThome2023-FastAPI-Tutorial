@@ -4,32 +4,30 @@
 Author: <strong>Liu Zhe You(Jason)</strong><br>
 LinkedIn : <a href="https://www.linkedin.com/in/zhe-you-liu-85aa13244//">Jason Liu</a><br>
 <br>
-Welcome to have any discussion with me about this tutorial.<br>
+Welcome to have any discussion with me about this tutorial 🙌<br>
 </samp>
 
-<br>
-<br>
 
-FastAPI RestfulAPI 前後端分離的支柱
+## FastAPI : RestfulAPI 前後端分離的支柱
 
--  [Day01](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day01)  FastAPI 推坑與框架的朋友們
+-  [[Day01]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day01)  FastAPI 推坑與框架的朋友們
     - FastAPI 優點
     - django / flask / FastAPI 大比拼
     - FastAPI 之於 其他 python 後端框架架，就像 typescript 之於 javascript(指的是語法層面)
     - 在各個 function 傳遞之間都會定義好 schema ， 更容易 Debus ( Schema 設定好)
-- [Day02](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day02)  FastAPI 起步： 環境安裝
+- [[Day02]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day02)  FastAPI 起步： 環境安裝
     - venv 
     - poetry 
     - uvicorn
-- [Day03](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day03) FastAPI 設定與 Uvicorn 包裝
+- [[Day03]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day03) FastAPI 設定與 Uvicorn 包裝
     - CROS
     - `app.py` 包裝
-- [Day04](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day04) FastAPI 基礎架構
+- [[Day04]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day04) FastAPI 基礎架構
     - app instance
     - router
     - swagger docs 
     - typing
-- [Day05](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day05) Schema & Pydanic
+- [[Day05]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day05) Schema & Pydanic
     - Pydanic
     - FastAPI 中的 Schema
 - [Day06] Response model
