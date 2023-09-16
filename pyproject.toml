@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ithome2023-fastapi-tutorial"
+version = "0.1.0"
+description = ""
+authors = ["jason810496 <810496@email.wlsh.tyc.edu.tw>"]
+readme = "README.md"
+packages = [{include = "ithome2023_fastapi_tutorial"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.1"
+uvicorn = "^0.23.2"
+python-dotenv = "^1.0.0"
+pydantic-settings = "^2.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
