@@ -1,6 +1,6 @@
 # [Day02]  FastAPI 啟動： 環境安裝
 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day02/assets/Day02/banner.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day02/banner.png)
 
 
 這次需要安裝的套件有
@@ -45,13 +45,13 @@ poetry init
 應該會跳出以下畫面 <br>
 接者在 `package name` 輸入 `fastapi` 和 `uvicorn` <br>
 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day02/assets/Day02/poetry-interative.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day02/poetry-interative.png)
 
 ### 啟用虛擬環境
 
 如果要進入 poetry 的虛擬環境 <br>
 需使用 `poetry shell` 指令 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day02/assets/Day02/active.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day02/active.png)
 
 或是使用 `poetry run` 指令 <br>
 以虛擬環境執行 python 檔案 ( 但不會進入虛擬環境 ) 
@@ -80,7 +80,7 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day02/assets/Day02/venv.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day02/venv.png)
 
 
 ### 安裝 fastapi 和 uvicorn
