@@ -16,15 +16,14 @@ FastAPI : 前後端分離系統的支柱
     - `app.py` 包裝
 - [Day04] FastAPI 基礎架構
     - Typing 
-    - router
     - python decorator ( vs flask )
     - swagger docs 
-- [Day05] FastAPI Router parmater & query paramater
+- [Day05] FastAPI Router parmater & query paramater , router
     - path parameter
     - query parameter ( q : str = None  代表 q 可以為 None)
 - [Day06] Schema & Pydanic
-- [Day07] Example & Field
 - [Day08] Response module
+- [Day07] Example & Field
 - [Day09] Python Typing 
     - 可能為 None -> Optional
     - 可以是多個 type -> Union
