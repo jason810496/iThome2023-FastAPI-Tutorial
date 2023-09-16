@@ -23,3 +23,7 @@ def get_infor():
 @app.get("/users/{user_id}")
 def get_users(user_id: int, qry: str = None):
     return {"user_id": user_id, "query": qry }
+
+@app.get("/items/{item_id}")
+def get_items_without_typing(item_id, qry):
+    return {"item_id": item_id, "query": qry }

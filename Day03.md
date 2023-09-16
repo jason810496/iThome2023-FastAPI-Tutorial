@@ -31,11 +31,11 @@ uvicorn main:app --reload --host 0.0.0.0 --port 5002
 ```
 
 應該會看到以下的結果
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/uvicorn-start.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day03/uvicorn-start.png)
 
 接著打開瀏覽器，輸入 `http://localhost:5002` <br>
 可以看到 Swagger UI 的介面
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/swagger.png)
+![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day03/swagger.png)
 
 我們會在明天再細講 FastAPI 的架構
 
@@ -144,7 +144,7 @@ def get_settings():
 只有在第一次跑到 `get_settings()` 時才會去載入 `.env` 檔案，接下來都會從 cache 回傳 `Setting()` 的 instance <br>
 可以參考一下圖片 <br>
 
-![lru cache with setting object](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/lru-cache.png)
+![lru cache with setting object](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day03/lru-cache.png)
 
 ( 截自 [FastAPI Advanced setting : creating the settings only once with lru_cache](https://fastapi.tiangolo.com/advanced/settings/#creating-the-settings-only-once-with-lru_cache) )
 
@@ -232,7 +232,7 @@ def get_infor():
 python run.py --dev
 ```
 執行結果
-![start server in dev mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/start-server-dev.png)
+![start server in dev mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day03/start-server-dev.png)
 
 以 `curl` 測試 `/infor` API
 ```bash
@@ -250,7 +250,7 @@ python run.py --prod
 ```
 
 執行結果
-![start server in prod mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Day03/assets/Day03/start-server-prod.png)
+![start server in prod mode](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day03/start-server-prod.png)
 
 以 `curl` 測試 `/infor` API
 ```bash
@@ -274,50 +274,3 @@ curl http://localhost:8003/infor
 
 
 
-## 我們剛剛做了什麼？
-
-### 建立 FastAPI app
-
-`app` 是一個 FastAPI 的 instance，我們可以在這個 instance 中定義我們所有的 API
-```python
-from fastapi import FastAPI
-
-app = FastAPI()
-```
-
-### 定義 API
-
-如果有寫過 `express` 或是 `flask` 的朋友，應該對這個語法不陌生 <br>
-`@app.get("/")` 這個 decorator 代表這個 function 會來處理進入 `/` 的 `GET` request <br>
-
-```python
-@app.get("/")
-def hello_world():
-    return "Hello World"
-```
-
-而另一段 
-```python
-@app.get("/users/{user_id}")
-def get_users(user_id: int, qry: str = None):
-    return {"user_id": user_id, "query": qry }
-```
-代表這個 function 會來處理進入 `/users/{user_id}` 的 `GET` request <br>
-並且 `user_id` 是一個 `path parameter` ， `qry` 是一個 `query parameter`
-
-#### 支援 async function
-
-並且 FastAPI 支援 `async` function ，也可以將這個 function 定義成 `async`
-```python
-@app.get("/")
-async def hello_world():
-    return "Hello World"
-```
-
-#### API HTTP method
-
-除了 `get` 之外，如果要使用其他 HTTP method ，可以使用以下的語法
-- `@app.post("/route")`
-- `@app.put("/route")`
-- `@app.delete("/route")`
-- `@app.patch("/route")`
