@@ -1,6 +1,6 @@
 # iThome 2023
 
-FastAPI RestfulAPI 前後端分離的支柱
+FastAPI : 前後端分離系統的支柱
 
 -  [Day01]  FastAPI 推坑與框架的朋友們
     - FastAPI 優點
@@ -20,6 +20,8 @@ FastAPI RestfulAPI 前後端分離的支柱
     - python decorator ( vs flask )
     - swagger docs 
 - [Day05] FastAPI Router parmater & query paramater
+    - path parameter
+    - query parameter ( q : str = None  代表 q 可以為 None)
 - [Day06] Schema & Pydanic
 - [Day07] Example & Field
 - [Day08] Response module

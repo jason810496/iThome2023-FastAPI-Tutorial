@@ -90,6 +90,42 @@ pip3 install fastapi
 pip3 install uvicorn
 ```
 
+## 什麼是 Uvicorn ?
+
+[`uvicorn`](https://www.uvicorn.org/) 是一個 ASGI server <br> 
+( ASGI 是一個 python 的 async server gateway interface ) <br>
+FastAPI 也是使用 uvicorn 來啟動 server <br>
+
+安裝完 `uvicorn` 之後，可以使用以下指令來啟動 server
+```bash
+uvicorn <path_to_your_app>:<app_object_name> --host <host> --port <port>
+```
+
+如果有一下的檔案結構
+```
+.
+└── main.py
+```
+而 `main.py` 中有一個 `my_app` instance
+```python
+from fastapi import FastAPI
+
+my_app = FastAPI()
+
+@my_app.get("/")
+def root():
+    return {"message": "Hello World"}
+```
+並且要跑在 `0.0.0.0` 的 `8000` port 上 <br>
+可以使用以下指令來啟動 server
+```bash
+uvicorn main:my_app --host 0.0.0.0 --port 8000
+# 如果已經有在虛擬環境中
+
+poetry run uvicorn main:my_app --host 0.0.0.0 --port 8000
+# 如果有使用 poetry 但沒有進入虛擬環境
+```
+
 ## Summary
 
 這次的環境安裝，可以使用 `poetry` 或是 `venv` <br>
