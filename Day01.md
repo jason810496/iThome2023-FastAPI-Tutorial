@@ -17,6 +17,19 @@ FastAPI 是由 ：
     - 在 Average Latency 的圖表：
         ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/comparison-avg.png)
 
+### 內建支援 async function
+
+並且 FastAPI 支援 `async` function
+```python
+@app.get("/async")
+async def async_hello_world():
+    return "Hello World"
+
+@app.get("/sync")
+def sync_hello_world():
+    return "Hello World"
+```
+
 
 ### 內建支援 OpenAPI (Swagger) 規範
 跑起 FastAPI 後，可以在 `http://localhost:port/docs` 看到 Swagger UI <br>
