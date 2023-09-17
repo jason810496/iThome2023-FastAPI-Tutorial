@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
 from setting.config import get_settings
-from schemas.users import User as UserSchema
-from schemas.items import Item as ItemSchema
+# from schemas.users import User as UserSchema
+from schemas import users as UserSchema
+from schemas import items as ItemSchema
 
 fake_db = {
     "users": {
@@ -51,24 +52,34 @@ def get_infor():
         "reload": settings.reload
     }
 
-@app.get("/users/{user_id}")
-def get_users(user_id: int, qry: str = None):
+@app.get("/users/{user_id}" , response_model=UserSchema.UserRead )
+def get_user_by_id(user_id: int, qry: str = None):
     if user_id not in fake_db["users"]:
         return {"error": "User not found"}
-    return {"user": fake_db['users'][user_id], "query": qry }
+    return fake_db['users'][user_id]
 
-@app.post("/users")
-def create_users(user: UserSchema):
+@app.post("/users" , response_model=UserSchema.UserCreate )
+def create_users(user: UserSchema.UserCreate ):
     fake_db["users"][user.id] = user
     return user
 
-@app.get("/items/{item_id}")
-def get_items_without_typing(item_id, qry):
+@app.delete("/users/{user_id}" )
+def delete_users(user_id: int):
+    user = fake_db["users"].pop(user_id)
+    return user
+
+@app.get("/items/{item_id}" , response_model=ItemSchema.ItemRead)
+def get_item_by_id(item_id : int , qry : str = None ):
     if item_id not in fake_db["items"]:
         return {"error": "Item not found"}
-    return {"item": fake_db['items'][item_id], "query": qry }
+    return fake_db['items'][item_id]
 
-@app.post("/items")
-def create_items(item: ItemSchema):
+@app.post("/items" , response_model=ItemSchema.ItemCreate)
+def create_items(item: ItemSchema.ItemCreate ):
     fake_db["items"][item.id] = item
+    return item
+
+@app.delete("/items/{item_id}")
+def delete_items(item_id: int):
+    item = fake_db["items"].pop(item_id)
     return item
