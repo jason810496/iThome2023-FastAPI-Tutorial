@@ -23,28 +23,27 @@ FastAPI RestfulAPI 前後端分離的支柱
     - Pydanic
     - FastAPI 中的 Schema
 - [Day06] Response model
-- [Day07] Example & Field
+- [Day07] 再談 Python Typing 與 Schema 常見錯誤
+    - 可能為 None -> Optional
+    - 可以是多個 type -> Union
+    - 為這個 type 註解 -> Annotated
+- [Day08] 為 Swagger API endpoint 加上更多資訊
     - Example
     - Field
     - Response description
     - Status code
-- [Day08] 再談 Python Typing 與 Schema 常見錯誤
-    - 可能為 None -> Optional
-    - 可以是多個 type -> Union
-    - 為這個 type 註解 -> Annotated
-- [Day09] Dpendency 萬用刀
-- [Day10] 再談 Dpendency 常見錯誤
+- [Day09] Dpendency 萬用刀 & 常見錯誤
     - 只能在 router 的地方使用 Depends
     - 如果在其他 utils.py 或 model.py 使用會報錯
-- [Day11] 依據項目切分 Router
-- [Day12] 連接 DB
+- [Day10] 依據項目切分 Router
+- [Day11] 連接 DB
+- [Day12] Model
 - [Day13] 使用 SQLalchemy
-- [Day14] Model
-- [Day15] Schema 與 Model 差別
-- [Day16] 架構優化：將 CRUD 與 api endpoint 分離
-- [Day17] 架構優化：非同步存取 DB 與 .env
-- [Day18] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
-- [Day19] OAuth2 實例：OAuth2 Login / Refresh JWT 機制
+- [Day14] Schema 與 Model 差別
+- [Day15] 架構優化：將 CRUD 與 api endpoint 分離
+- [Day16] 架構優化：非同步存取 DB
+- [Day17] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
+- [Day18] OAuth2 實例：OAuth2 Login / Refresh JWT 機制
     - 分為三個 router : 
         - /auth
         - /user
@@ -54,22 +53,23 @@ FastAPI RestfulAPI 前後端分離的支柱
             - avatar
             - money
             - address
-- [Day20] OAuth2 實例：內建 OAuth2_schema
-- [Day21] OAuth2 實例：密碼驗證
-- [Day22] OAuth2 實例： JWT 驗證
-- [Day23] OAuth2 實例：需要 Authorize 的 router
+- [Day19] OAuth2 實例：內建 OAuth2_schema
+- [Day20] OAuth2 實例：密碼驗證
+- [Day21] OAuth2 實例： JWT 驗證
+- [Day22] OAuth2 實例：需要 Authorize 的 router
     - 將 OAuth2_schema 設為 Depends
-- [Day24] OAuth2 實例：User api & CRUD
-- [Day25] OAuth2 實例：Me api & CRUD
-- [Day26] 測試：pytest 入門與安裝
-- [Day27] 測試：pytest CRUD 與驗證
-- [Day28] 部署：使用 docker-compose 部署
+- [Day23] OAuth2 實例：User api & CRUD
+- [Day24] OAuth2 實例：Me api & CRUD
+- [Day25] 測試：pytest 入門與安裝
+- [Day26] 測試：pytest CRUD 與驗證
+- [Day27] 部署：使用 docker-compose 部署
 
+- [DayXX] 延伸功能：使用 redis 作為 server cache (設定)
+- [DayXX] 延伸功能：在 CRUD 查詢加上 cache
+- [DayXX] 延伸功能：使用 decorator 重構 redis 架構
+- [DayXX] 延伸功能：專案細節調整與部署
 
 - [Day30] 總結：
-- [Day31] 延伸功能：使用 redis 作為 server cache (設定)
-- [Day32] 延伸功能：在 CRUD 查詢加上 cache
-- [Day33] 延伸功能：使用 decorator 重構 redis 架構
-- [Day34] 延伸功能：專案細節調整與部署
+
 
     
