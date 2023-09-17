@@ -1,6 +1,8 @@
 # iThome 2023 FastAPI Tutorial
 
+<a href="https://ithelp.ithome.com.tw/users/20148985/ironman/6772">鐵人賽文章列表</a>
 <samp>
+<br>
 Author: <strong>Liu Zhe You(Jason)</strong><br>
 LinkedIn : <a href="https://www.linkedin.com/in/zhe-you-liu-85aa13244//">Jason Liu</a><br>
 <br>
@@ -30,7 +32,7 @@ Welcome to have any discussion with me about this tutorial 🙌<br>
 - [[Day05]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day05) Schema & Pydanic
     - Pydanic
     - FastAPI 中的 Schema
-- [Day06] Response model
+- [[Day06]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day06) Response model
 - [Day07] Example & Field
 - [Day08] 再談 Python Typing 
 - [Day09] 再談 Schema 常見錯誤
