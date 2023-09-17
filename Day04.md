@@ -127,16 +127,16 @@ def get_items_without_typing(item_id, qry):
 ```
 
 啟動 FastAPI 後，看一下 Swagger UI <br>
-![user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/user.png)
+![user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/user.png)
 可以看到 `user_id` 是一個 `int` ， `query` 是一個 `str` <br>
 如果我們 `user_id` 是用 `string` 在 Swagger UI 中會報錯 <br>
-![user ui error](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/user-ui-error.png)
+![user ui error](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/user-ui-error.png)
 如果是使用 `curl` 來呼叫 API 會回傳 `422 Unprocessable Entity` <br> 
-![user 422](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/user-422.png)
+![user 422](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/user-422.png)
 我們可以在 `response` 中看到 `detail` 中有 `msg` 代表 `user_id` 應該要是 `int` <br>
 能夠及時在定義 `router` 的時候就發現這個問題 ！
 
-![item](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/item.png)
+![item](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/item.png)
 可以看到 `item_id` 和 `query` 並沒有特別說型態 <br>
 當我們在接完 DB 之後的測試階段才遇到報錯 <br>
 就會**很難 Debug** 了 ！
@@ -144,8 +144,8 @@ def get_items_without_typing(item_id, qry):
 ### Optional Query parameter
 
 再次觀察剛剛兩個 API 的 Swagger UI 和 code<br>
-![user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/user.png)
-![item](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/item.png)
+![user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/user.png)
+![item](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/item.png)
 
 user : 
 ```python
@@ -164,7 +164,7 @@ def get_items_without_typing(item_id, qry):
 可以看到 user 的 query parameter 有 ` = None` ，但 item 的 query parameter 沒有 <br>   
 這代表 item 的 query parameter 是必填的，但 user 的 query parameter 可以不填 <br>
 如果 item 的 query parameter 不填也會報 `422 Unprocessable Entity` <br>
-![item without para](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/main/assets/Day04/item-without-para.png)
+![item without para](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/item-without-para.png)
 
 ## Json 入參 ?
 
