@@ -2,8 +2,13 @@ from datetime import date
 
 from pydantic import BaseModel
 
-class User(BaseModel):
-    id: int
+class UserBase(BaseModel):
     name: str
+
+class UserCreate(UserBase):
+    age: int
     email: str
     birthday: date
+
+class UserRead(UserBase):
+    email: str

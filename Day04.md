@@ -166,7 +166,7 @@ def get_items_without_typing(item_id, qry):
 如果 item 的 query parameter 不填也會報 `422 Unprocessable Entity` <br>
 ![item without para](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day04/item-without-para.png)
 
-## Json 入參 ?
+## Body 入參 ?
 
 剛剛加上的 Typing 是用來定義 `path parameter` 和 `query parameter` 的型別 <br>
 那如果我們想要定義 `request body` 的型別呢 ？ <br>
