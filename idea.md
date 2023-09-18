@@ -24,15 +24,20 @@ FastAPI RestfulAPI 前後端分離的支柱
     - FastAPI 中的 Schema
 - [Day06] Response model
 - [Day07] 再談 Python Typing 與 Schema 常見錯誤
+    - HTTPException
     - 可能為 None -> Optional
     - 可以是多個 type -> Union
-    - 為這個 type 註解 -> Annotated
 - [Day08] 為 Swagger API endpoint 加上更多資訊
+    - Response description
+    - Summary
     - Example
     - Field
-    - Response description
+    - deprecated
     - Status code
 - [Day09] Dpendency 萬用刀 & 常見錯誤
+    - common query params
+    - common header
+    - 要是 callable
     - 只能在 router 的地方使用 Depends
     - 如果在其他 utils.py 或 model.py 使用會報錯
 - [Day10] 依據項目切分 Router

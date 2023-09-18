@@ -19,33 +19,48 @@ mkdir database
 touch database/fake_db.py
 ```
 
-並為 `fake_db['users']` 加上 `id` 、 `password` 和 `avatar` 欄位
+先將 `fake_db['users']` 改為 `list` <br> 
+並為 `fake_db['users']` 中的每個 `dict`加上 `id` 、 `password` 和 `avatar` 欄位
 
 ```python
 fake_db = {
-    "users": {
-        1: {
+    "users": 
+        [
+            {
+                "id": 1,
+                "password": "John",
+                "avatar": "https://i.pravatar.cc/300",
+                "name": "John",
+                "age": 35,
+                "email": "john@fakemail.com",
+                "birthday": "2000-01-01",
+            },
+            {
+                "id": 2,
+                "password": "Jane",
+                "avatar": None,
+                "name": "Jane",
+                "age": 25,
+                "email": "jane@fakemail.com",
+                "birthday": "2010-12-04",
+            }
+        ]
+    ,
+    "items": 
+    [
+        {
             "id": 1,
-            "password": "John",
-            "avatar": "https://i.pravatar.cc/300",
-            "name": "John",
-            "age": 35,
-            "email": "john@fakemail.com",
-            "birthday": "2000-01-01",
+            "name": "iPhone 12",
+            "price": 1000,
+            "brand": "Apple"
         },
-        2: {
+        {
             "id": 2,
-            "password": "Jane",
-            "avatar": None,
-            "name": "Jane",
-            "age": 25,
-            "email": "jane@fakemail.com",
-            "birthday": "2010-12-04",
+            "name": "Galaxy S21",
+            "price": 800,
+            "brand": "Samsung"
         }
-    },
-    "items":{
-        #...
-    }
+    ]    
 }
 ```
 在 `main.py` 中引入 `database.fake_db` 並調整 `get_db` 的回傳值
@@ -80,6 +95,36 @@ class UserRead(UserBase):
     email: str
     avatar: str
 ```
+
+最後因應 `fake_db` 調整 API 中 CRUD 的寫法:
+`main.py`
+```python
+
+@app.get("/users/{user_id}" , response_model=UserSchema.UserRead )
+def get_user_by_id(user_id: int, qry: str = None):
+
+    for user in fake_db["users"]:
+        if user["id"] == user_id:
+            return user
+        
+    return {"error": "User not found"}
+
+@app.post("/users" , response_model=UserSchema.UserCreateResponse )
+def create_users(user: UserSchema.UserCreate ):
+    fake_db["users"].append(user)
+    return user
+
+@app.delete("/users/{user_id}" )
+def delete_users(user_id: int):
+    
+    for user in fake_db["users"]:
+        if user["id"] == user_id:
+            fake_db["users"].remove(user)
+            return user
+        
+    return {"error": "User not found"}
+```
+
 
 ### Schema 常見錯誤 1
 
@@ -156,6 +201,44 @@ def create_users(user: UserSchema.UserCreate ):
 所以對於 **可能為 null(None)** 的欄位 <br>
 我們應該要使用 `Optional` 或 `Union` 來定義 <br>
 
+### Schema 常見錯誤 3
+
+接下來我們來看看第三個 schema 常見錯誤 <br>
+先來打一下 GET `/users/99` 的 API 看看
+
+![get user 99](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/get-user-99.png)
+會發現 `500 Internal Server Error` <br>
+查看 server log 後
+![500 log 2](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/500-log-2.png)
+上面寫著 Pydantic error <br>
+是因為 user not found 的情況回傳的 `{"error": "User not found"}` <br>
+並不是 `UserRead` 的 schema 所造成的 <br>
+
+<br>
+
+所以我們可以透過 `raise HTTPException` 來處理 <br>
+`main.py`
+```python
+from fastapi import FastAPI, HTTPException # 引入 HTTPException
+
+# ...
+
+@app.get("/users/{user_id}" , response_model=UserSchema.UserRead )
+def get_user_by_id(user_id: int, qry: str = None):
+
+    for user in fake_db["users"]:
+        if user["id"] == user_id:
+            return user
+        
+    raise HTTPException(status_code=404, detail="User not found")
+
+```
+
+再次打一下 GET `/users/99` 的 API 看看 <br>
+![get user 99 fix](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/get-user-99-fix.png)
+這樣就不會回傳 `500 Internal Server Error` 了 <br>
+而是回傳 `404` status code 與 `{"detail": "User not found"}` <br>
+
 ## 再談 Python Typing 
 
 ### Optional & Union
@@ -194,7 +277,7 @@ class UserRead(UserBase):
 
 ![get user 2 fix](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/get-user-2-fix.png)
 
-## 更新其他 API
+### 更新其他 API
 
 我們假設 user 的 `avatar` 可以不填寫 ( 可能有用戶不想要設定頭像 ) <br>
 所以在 create user 的 API 中，我們也要將 `avatar` 設定為 `Optional` <br>
@@ -214,11 +297,50 @@ class UserCreate(UserBase):
 ![create user fix](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/create-user-fix.png)
 也不會報錯了 <br>
 
+### List 
+
+在說明 `List` 之前，我們先加上新的 API <br>
+( 取得 user list )
+`main.py`
+```python
+@app.get("/users")
+def get_users(qry: str = None):
+    return fake_db['users']
+```
+
+那要如何為 `get_users` 的 API 加上 `response_model` 呢 ? <br>
+這時候就可以透過 `List` 來定義 <br>
+
+`main.py`
+```python
+@app.get("/users", response_model=List[UserSchema.UserRead])
+def get_users(qry: str = None):
+    return fake_db['users']
+```
+
+這樣在 Swagger docs 中就可以看到 `get_users` 以 List schema 回傳的結果了 <br>
+![get users](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day07/get-users.png)
+
+<br>
+
+而在 Python 3.9 之後，也可以使用內建的 `list` 來定義 <br>
+`main.py`
+```python
+@app.get("/users", response_model=list[UserSchema.UserRead])
+def get_users(qry: str = None):
+    return fake_db['users']
+```
+
+
 
 ## 總結
 
-- 涵蓋敏感資訊的 API 要記得設定專屬的 response schema
-- 對於可能為 null 的欄位，使用 `Optional` 或 `Union` 來定義
+- **涵蓋敏感資訊**的 API 要記得設定專屬的 **response schema** 來做 data filter
+- 對於**可能為 null** 的欄位，要使用 `Optional` 或 `Union` 來定義 schema
+- 對於 error 的處理，可以透過 `raise HTTPException` 來處理
+- 使用 `List` 來定義回傳的資料為 list
+
+
 
 
 
