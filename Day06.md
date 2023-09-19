@@ -1,5 +1,7 @@
 # [Day06] Response model
 
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day06 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day06)** <br>
+
 ## 昨天回顧
 
 昨天我們介紹了 `Pydantic` 的基本使用 <br>
