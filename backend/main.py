@@ -1,4 +1,4 @@
-from fastapi import FastAPI , HTTPException
+from fastapi import FastAPI , HTTPException , status
 
 from typing import List , Dict
 
@@ -27,8 +27,20 @@ def get_infor():
         "reload": settings.reload
     }
 
-@app.get("/users", response_model=List[UserSchema.UserRead])
+@app.get("/users", 
+        response_model=List[UserSchema.UserRead],
+        response_description="Get list of user",  
+)
 def get_users(qry: str = None):
+    """
+    Create an user list with all the information:
+
+    - **id**
+    - **name**
+    - **email**
+    - **avatar**
+
+    """
     return fake_db['users']
 
 @app.get("/users/{user_id}" , response_model=UserSchema.UserRead )
@@ -40,7 +52,11 @@ def get_user_by_id(user_id: int, qry: str = None):
         
     raise HTTPException(status_code=404, detail="User not found")
 
-@app.post("/users" , response_model=UserSchema.UserCreateResponse )
+@app.post("/users" ,
+        response_model=UserSchema.UserCreateResponse,
+        status_code=status.HTTP_201_CREATED,
+        response_description="Create new user"
+)
 def create_users(newUser: UserSchema.UserCreate ):
 
     for user in fake_db["users"]:
@@ -49,6 +65,10 @@ def create_users(newUser: UserSchema.UserCreate ):
         
     fake_db["users"].append(newUser)
     return newUser
+
+@app.post("/userCreate" , deprecated=True )
+def create_user_deprecated(newUser: UserSchema.UserCreate ):
+    return "deprecated"
 
 @app.delete("/users/{user_id}" )
 def delete_users(user_id: int):
