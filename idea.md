@@ -34,17 +34,16 @@ FastAPI RestfulAPI 前後端分離的支柱
     - Field
     - deprecated
     - Status code
-- [Day09] Dpendency 萬用刀 & 常見錯誤
+- [Day09] 依據項目切分 Router
+- [Day10] 連接 DB
+- [Day12] Model
+- [Day13] 使用 SQLalchemy
+- [Day10] Dpendency 萬用刀 & 常見錯誤
     - common query params
     - common header
     - 要是 callable
     - 只能在 router 的地方使用 Depends
     - 如果在其他 utils.py 或 model.py 使用會報錯
-- [Day10] 依據項目切分 Router
-- [Day11] 連接 DB
-- [Day12] Model
-- [Day13] 使用 SQLalchemy
-- [Day14] Schema 與 Model 差別
 - [Day15] 架構優化：將 CRUD 與 api endpoint 分離
 - [Day16] 架構優化：非同步存取 DB
 - [Day17] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
