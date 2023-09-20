@@ -1,5 +1,7 @@
 # [Day05] Schema & Pydantic
 
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day05 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day05)** <br>
+
 ## 昨天談到什麼？
 
 - Typing

@@ -1,5 +1,7 @@
 # [Day07] 再談 Python Typing 與 Schema 常見錯誤
 
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day07 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day07)** <br>
+
 ## 回顧
 
 - [[Day04]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day04) FastAPI 基礎架構
