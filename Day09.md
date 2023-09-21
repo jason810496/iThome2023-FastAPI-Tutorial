@@ -130,7 +130,7 @@ app.include_router(users_router)
 ## tags 
 
 到 Swagger 中可以看到 <br>
-![swagger orig](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day08/swagger-orig.png)<br>
+![swagger orig](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day09/swagger-orig.png)<br>
 所有的 API 都與之前相同 <br>
 但我們還可以為 API 加上 **`tags`** <br>
 `tags` 的用途是可以讓我們在 Swagger 中將 API 分類 <br>
