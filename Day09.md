@@ -1,6 +1,6 @@
 # [Day09] 架構優化：依據項目切分 Router
 
-> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day07 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day08)** <br>
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day09 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day09)** <br>
 
 ## 回顧
 

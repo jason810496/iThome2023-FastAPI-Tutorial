@@ -1,5 +1,7 @@
 # [Day08] 為 Swagger API endpoint 加上更多資訊
 
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day08 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day08)** <br>
+
 ## 回顧
 
 我們已經知道如何透過：
