@@ -10,7 +10,9 @@ class Settings():
     app_mode: str = os.getenv("APP_MODE")
     port:int = int(os.getenv("PORT"))
     reload:bool = os.getenv("RELOAD")
-    database_url: str = os.getenv("DATABASE_URL")
+    
+    db_type:str = os.getenv("DB_TYPE").upper()
+    database_url: str = os.getenv(f"{db_type}_DATABASE_URL")
 
 
 @lru_cache()
