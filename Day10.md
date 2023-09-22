@@ -1,6 +1,6 @@
 # [Day10] 連接 Database
 
-> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day09 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day09)** <br>
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day10 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day10)** <br>
 
 ## 連接 Database
 
@@ -50,14 +50,10 @@ docker run --name fastapi_mysql_dev -e MYSQL_USER=fastapi_tutorial -e MYSQL_ROOT
 ```bash
 docker ps
 ```
-
 ![docker ps](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day10/docker-ps.png)
-
-```bash
 
 或是使用 docker desktop 來檢查
 ![docker desktop](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day10/docker-desktop.png)
-```
 
 ## 連接 Database
 
