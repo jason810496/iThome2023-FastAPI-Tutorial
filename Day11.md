@@ -269,12 +269,12 @@ def test():
 接著我們可以透過 Swagger 打剛剛建立的 test API <br>
 來測試我們的資料庫是否正常運作 <br>
 
-Create : 
+**Create :**
 ![test create](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day11/test-create.png)
 在看 Log 時，可以看到被 ORM 轉換的 `INSERT INTO`  SQL 語法 <br>
 ![test create log](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day11/test-create-log.png)
 
-Read :
+**Read :**
 ![test read](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day11/test-read.png)
 在看 Log 時，可以看到被 ORM 轉換的 `SELECT`  SQL 語法 <br>
 ![test read log](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day11/test-read-log.png)
@@ -327,8 +327,8 @@ Read :
 
 #### reference: 
 
-[What’s New in SQLAlchemy 2.0?](https://docs.sqlalchemy.org/en/20/changelog/whatsnew_20.html#whatsnew-20-orm-declarative-typing)
-[SQLAlchemy: relationship - one to many](https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html#one-to-many)
-[SQLAlchemy: relationship configuration](https://docs.sqlalchemy.org/en/20/orm/relationship_api.html#sqlalchemy.orm.relationship.params)
-[SQLAlchemy: declarative-mapping](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#orm-declarative-mapping)
-[SQLalchemy: mapping multiple type configurations to python types](https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#mapping-multiple-type-configurations-to-python-types)
+- [What’s New in SQLAlchemy 2.0?](https://docs.sqlalchemy.org/en/20/changelog/whatsnew_20.html#whatsnew-20-orm-declarative-typing)
+- [SQLAlchemy: relationship - one to many](https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html#one-to-many)
+- [SQLAlchemy: relationship configuration](https://docs.sqlalchemy.org/en/20/orm/relationship_api.html#sqlalchemy.orm.relationship.params)
+- [SQLAlchemy: declarative-mapping](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#orm-declarative-mapping)
+- [SQLalchemy: mapping multiple type configurations to python types](https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#mapping-multiple-type-configurations-to-python-types)
