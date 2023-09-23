@@ -1,8 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 from setting.config import get_settings
+from models.item import Item
+from models.user import User
 
 
 settings = get_settings()
@@ -14,10 +17,14 @@ engine = create_engine(
     pool_pre_ping=True
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False , bind=engine)
 
-Base = declarative_base()
 
+class Base(DeclarativeBase):
+    pass
 
 def get_db():
     return SessionLocal()
+
+def init_db():
+    Base.metadata.create_all(bind=engine, tables=[User.__table__, Item.__table__])
