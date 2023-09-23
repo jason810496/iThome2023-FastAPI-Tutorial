@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class ItemBase(BaseModel):
@@ -7,6 +8,7 @@ class ItemCreate(ItemBase):
     name: str
     price: float
     brand: str
+    description: Optional[str] = None
 
 class ItemRead(ItemBase):
     name: str
