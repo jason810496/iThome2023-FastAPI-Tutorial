@@ -36,8 +36,8 @@ FastAPI RestfulAPI 前後端分離的支柱
     - Status code
 - [Day09] 依據項目切分 Router
 - [Day10] 連接 DB
-- [Day12] Model
-- [Day13] 使用 SQLalchemy
+- [Day11] Model
+- [Day12] 使用 SQLalchemy
 - [Day10] Dpendency 萬用刀 & 常見錯誤
     - common query params
     - common header
