@@ -5,7 +5,7 @@ from pydantic import BaseModel , Field , EmailStr # <---- add EmailStr
 from typing import Optional
 
 class UserBase(BaseModel):
-    id: int
+    name: str
 
 class UserCreate(UserBase):
     password:str = Field(min_length=6)
@@ -19,7 +19,6 @@ class UserCreate(UserBase):
         "json_schema_extra": {
             "examples": [
                 {
-                    "id": 1,
                     "password": "123456",
                     "name": "user1",
                     "avatar": "https://i.imgur.com/4M34hi2.png",
@@ -31,14 +30,29 @@ class UserCreate(UserBase):
         }
     }
 
+# Prevent return plain text password
+class UserCreateResponse(UserBase):
+    id: int
+    email: str
+
 
 class UserRead(UserBase):
-    name: str
+    id: int
     email: str
     avatar: Optional[str] = None
 
+class UserUpdate(UserBase):
+    password: Optional[str] = Field(min_length=6)
+    avatar: Optional[str] = None
+    age: Optional[int] = Field(gt=0,lt=100)
+    birthday: Optional[date] = Field()
 
-# Prevent return plain text password
-class UserCreateResponse(UserBase):
-    name: str
-    email: str
+
+class UserUpdateResponse(UserBase):
+    avatar: Optional[str] = None
+    age: Optional[int] = Field(gt=0,lt=100)
+    birthday: Optional[date] = Field()
+
+class UserUpdatePassword(BaseModel):
+    password:str
+
