@@ -38,16 +38,16 @@ FastAPI RestfulAPI 前後端分離的支柱
 - [Day10] 連接 DB
 - [Day11] Model
 - [Day12] 使用 SQLalchemy
-- [Day10] Dpendency 萬用刀 & 常見錯誤
+- [Day13] Dpendency 萬用刀 & 常見錯誤
     - common query params
     - common header
     - 要是 callable
     - 只能在 router 的地方使用 Depends
     - 如果在其他 utils.py 或 model.py 使用會報錯
-- [Day15] 架構優化：將 CRUD 與 api endpoint 分離
-- [Day16] 架構優化：非同步存取 DB
-- [Day17] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
-- [Day18] OAuth2 實例：OAuth2 Login / Refresh JWT 機制
+- [Day14] 架構優化：將 CRUD 與 api endpoint 分離
+- [Day15] 架構優化：非同步存取 DB
+- [Day16] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
+- [Day17] OAuth2 實例：OAuth2 Login / Refresh JWT 機制
     - 分為三個 router : 
         - /auth
         - /user

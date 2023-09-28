@@ -24,7 +24,9 @@ class Base(DeclarativeBase):
     pass
 
 def get_db():
-    return SessionLocal()
+    with SessionLocal() as db:
+        with db.begin():
+            return db
 
 def init_db():
     Base.metadata.create_all(bind=engine, tables=[User.__table__, Item.__table__])
