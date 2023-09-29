@@ -7,17 +7,25 @@ from sqlalchemy import select
 
 from models.user import User as UserModel
 from database.generic import get_db
+from crud.users import get_user_id_by_id
 
 
 
 def check_user_id(user_id:int):
+    user = get_user_id_by_id(user_id)
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user.id
+
+def check_item_id(item_id:int):
     db_session:Session = get_db()
 
-    stmt = select(UserModel.id).where(UserModel.id == user_id)
+    stmt = select(UserModel.id).where(UserModel.id == item_id)
     user = db_session.execute(stmt).first()
 
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Item not found")
     return user.id
 
 def pagination_parms(keyword:Optional[str]=None,last:int=0,limit:int=50):
