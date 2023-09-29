@@ -1,14 +1,9 @@
 from fastapi import APIRouter, HTTPException, status , Depends
-from typing import List , Annotated
-from pydantic import Field
-from sqlalchemy.orm import Session 
-from sqlalchemy import select , update , delete
+from typing import List 
 
 from schemas import users as UserSchema
-from database.generic import get_db
-from models.user import User as UserModel 
-
-from api.depends import check_user_id , pagination_parms, test_verify_token
+from api.depends import check_user_id , pagination_parms
+from crud import users as UserCrud
 
 
 router = APIRouter(
@@ -16,24 +11,20 @@ router = APIRouter(
     prefix="/api",
 )
 
-db_session:Session = get_db()
+
 
 @router.get("/users", 
         response_model=List[UserSchema.UserRead],
         response_description="Get list of user",  
 )
-def get_users(page_parms= Depends(pagination_parms)):
-
-    stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
-    users = db_session.execute(stmt).all()
-
+def get_users(page_parms:dict= Depends(pagination_parms)):
+    users = UserCrud.get_users(**page_parms)
     return users
 
 @router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
-def get_user_by_id(user_id: int, qry: str = None):
+def get_user_by_id(user_id: int):
 
-    stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar).where(UserModel.id == user_id)
-    user = db_session.execute(stmt).first()
+    user = UserCrud.get_user_by_id(user_id)
     if user:
         return user
         
@@ -57,53 +48,23 @@ def create_user(newUser: UserSchema.UserCreate ):
 
     """
 
-    stmt = select(UserModel.id).where(UserModel.email == newUser.email)
-    user = db_session.execute(stmt).first()
+    user = UserCrud.get_user_id_by_email(newUser.email)
     if user:
         raise HTTPException(status_code=409, detail=f"User already exists")
     
-    # create user
-    user = UserModel(
-        name=newUser.name,
-        password=newUser.password,
-        age=newUser.age,
-        birthday=newUser.birthday,
-        email=newUser.email,
-        avatar=newUser.avatar
-    )
-
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-
+    user = UserCrud.create_user(newUser)
     return vars(user)
 
 @router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse )
 def update_user(newUser: UserSchema.UserUpdate,user_id:int=Depends(check_user_id) ):
     
-    stmt = update(UserModel).where(UserModel.id == user_id).values(
-        name=newUser.name,
-        password=newUser.password,
-        age=newUser.age,
-        birthday=newUser.birthday,
-        avatar=newUser.avatar
-    )
-
-    db_session.execute(stmt)
-    db_session.commit()
-
+    UserCrud.update_user(newUser,user_id)
     return newUser
 
 @router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT)
 def update_user_password(newUser:UserSchema.UserUpdatePassword,user_id:int=Depends(check_user_id)):
-    
-    stmt = update(UserModel).where(UserModel.id == user_id).values(
-        password=newUser.password,
-    )
 
-    db_session.execute(stmt)
-    db_session.commit()
-
+    UserCrud.update_user_password(newUser,user_id)
     return 
 
 
@@ -114,9 +75,6 @@ def create_user_deprecated(newUser: UserSchema.UserCreate ):
 
 @router.delete("/users/{user_id}",status_code=status.HTTP_204_NO_CONTENT )
 def delete_users(user_id:int = Depends(check_user_id) ):
-    
-    stmt = delete(UserModel).where(UserModel.id == user_id)
-    db_session.execute(stmt)
-    db_session.commit()
 
+    UserCrud.delete_user(user_id)
     return 
