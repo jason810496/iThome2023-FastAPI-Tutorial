@@ -7,12 +7,14 @@ from sqlalchemy import select
 
 from models.user import User as UserModel
 from database.generic import get_db
-from crud.users import get_user_id_by_id
+from crud.users import UserCrudManager
+
+UserCrud = UserCrudManager()
 
 
 
-def check_user_id(user_id:int):
-    user = get_user_id_by_id(user_id)
+async def check_user_id(user_id:int):
+    user = await UserCrud.get_user_id_by_id(user_id)
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
