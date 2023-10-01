@@ -21,9 +21,6 @@ class Base(DeclarativeBase):
     pass
 
 
-from contextlib import asynccontextmanager
-
-@asynccontextmanager
 async def get_db():
     async with SessionLocal() as db:
         async with db.begin():

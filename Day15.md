@@ -258,8 +258,8 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 
 async def close_db():
-    if engine:
-        await engine.dispose()
+   async with engine.begin() as conn:
+        await conn.close()
     
 ```
 要注意的是，我們的 `get_db` 有一點不一樣 <br>
@@ -340,10 +340,10 @@ async def get_users(page_parms:dict= Depends(pagination_parms), db_session=db_de
 
 <br>
 
-- `sync` : `ab -n 50000 -c 32 http://127.0.0.1:8001/sync/api/users`
+- `sync` : `ab -n 50000 -c 32 http://127.0.0.1:8001/sync/api/users` <br>
 ![bench 50000 32 sync](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day15/bench-50000-32-sync.png)
 會發先跑到一半就跳出 `apr_socket_recv: timeout` 的 error <br>
-- `async`  : `ab -n 50000 -c 32 http://127.0.0.1:8001/api/users`
+- `async`  : `ab -n 50000 -c 32 http://127.0.0.1:8001/api/users` <br>
 ![bench 50000 32 async](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day15/bench-50000-32-async.png)
 可以完整的跑完 `50000` 個 request <br>
 `Time per request` 是約 `67` ms <br>
@@ -356,184 +356,20 @@ async def get_users(page_parms:dict= Depends(pagination_parms), db_session=db_de
 
 <br>
 
-- `sync` : `ab -n 10000 -c 4 http://127.0.0.1:8001/sync/api/users`
+- `sync` : `ab -n 10000 -c 4 http://127.0.0.1:8001/sync/api/users` <br>
 ![bench 10000 4 sync](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day15/bench-10000-4-sync.png)
-- `async`  : `ab -n 10000 -c 4 http:///127.0.0.1:8001/api/users`
+- `async`  : `ab -n 10000 -c 4 http:///127.0.0.1:8001/api/users` <br>
 ![bench 10000 4 async](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day15/bench-10000-4-async.png)
 
 會發現反而 `sync` 的 performance 比 `async` 好 <br>
 
 ## 總結
 
-
-## CRUD Class
-
-目前的寫法都是將 CRUD 分寫成 function 如： `get_users` 、 `get_user_id_by_email` 、 `create_user` 等<br>
-但是我們也可以將所有得 CRUD functions 都包裝在 class 中 <br>
-
-`crud/users.py`
-```python
-class UserCrud:
-    def __init__(self,db_session:AsyncSession):
-        self.db_session = db_session
-    async def get_users(self,db_session:AsyncSession, keyword:str=None,last:int=0,limit:int=50):
-        stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
-        if keyword:
-            stmt = stmt.where(UserModel.name.like(f"%{keyword}%"))
-        stmt = stmt.offset(last).limit(limit)
-        result = await db_session.execute(stmt)
-        users = result.all()
-
-        return users
-    # ... CRUD functions
-
-async def get_user_crud():
-    async with get_db() as db_session:
-        yield UserCrud(db_session)
-```
-
-這樣的好處是：我們不需要為每個 CRUD function 都注入 `AsyncSession` <br>
-可以直接透過 `Depends(get_user_crud)` 來取得 `UserCrud` class 來操作 <br>
-
-<br>
-
-`api/users.py`
-```python
-from crud.users import UserCrud , get_user_crud_manager
-
-# ... 
-
-db_depends = Depends(get_user_crud) # <--- 修改
-
-@router.get("/users", 
-        response_model=List[UserSchema.UserRead],
-        response_description="Get list of user",  
-)
-async def get_users(page_parms:dict= Depends(pagination_parms), userCrud:UserCrud=db_depends):
-    users = await userCrud.get_users(**page_parms)
-    return users
-```
-
-
-
-
-
-## Depends 與 yield 常見錯誤
-
-在使用 `Depends` 與 `yield` 時，常見的錯誤如下：
-我們可能會想：「如果要在 `api/users.py` 中使用 `Depends(get_user_crud)` 來取得 `UserCrud` class 來操作」<br>
-為什麼不直接在 `crud/users.py` 中使用 `Depends(get_db)` 來取得 `AsyncSession` 來操作呢？ <br>
-`crud/users.py`
-```python
-
-class UserCrud:
-    def __init__(self):
-        self.db_session = Depends(get_db) # <--- 修改
-    async def get_users(self,db_session:AsyncSession, keyword:str=None,last:int=0,limit:int=50):
-        stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
-        if keyword:
-            stmt = stmt.where(UserModel.name.like(f"%{keyword}%"))
-        stmt = stmt.offset(last).limit(limit)
-        result = await db_session.execute(stmt)
-        users = result.all()
-
-        return users
-    # ... CRUD functions
-```
-直接這樣寫的話，會報錯如下：
-![depends crud error]()
-寫著 `AttributeError: 'Depends' object has no attribute 'execute'` ：`Depends` 沒有 `execute` 的屬性 <br>
-但依照我們的邏輯，`self.db_session` 應該是 `AsyncSession` 才對啊（？ <br>
-這是因為在 FastAPI 中，**`Depends` 必須要寫在 API endpoint 的 handle funtion 中** ! <br>
-也就是說，我們只能在 `api/users.py` 中使用 `Depends(get_user_crud)` 來取得 `UserCrud` class 來操作 <br>
-或是透過 `Depends(get_db)` 來注入 `AsyncSession` 到 CRUD function 中 <br>
-
-<br>
-<br>
-
-那可能又會想說：「為什麼一定要透過 `Depends` 來取得 `AsyncSession` 呢？ <br>
-應該也可以直接在 `crud/users.py` 中使用 `async with get_db() as db_session` 來取得 `AsyncSession` 才對啊（？ <br>
-
-`crud/users.py`
-```python
-# ...
-
-  async def get_users(self,keyword:str=None,last:int=0,limit:int=50):
-        async with get_db() as db_session: # <--- 新增 
-            stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
-            if keyword:
-                stmt = stmt.where(UserModel.name.like(f"%{keyword}%"))
-            stmt = stmt.offset(last).limit(limit)
-            # result = await self.db_session.execute(stmt)
-            result = await db_session.execute(stmt)
-            users = result.all()
-
-            return users
-```
-
-<br>
-
-這樣寫的話，會報錯如下：
-![without depends error]()
-
-寫著 `TypeError: 'async_generator' object does not support the asynchronous context manager protocol` <br>
-查看 [FastAPI Doc 中，與 Depends 和 yield 相關的部分](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/) <br>
-上面提到 [@contextlib.asynccontextmanager](https://docs.python.org/3/library/contextlib.html#contextlib.asynccontextmanager) <br>
-稍微了解後，我們可以知道 `async with` 是 `async` 的 context manager <br>
-`async_generator` 不支援 `async` 的 context manager <br>
-
-
-## CRUD Manager
-
-上面提到的問題 <br>
-> `async with` 是 `async` 的 context manager <br>
-> `async_generator` 不支援 `async` 的 context manager <br>
-
-<br>
-
-我們可以透過 `@contextlib.asynccontextmanager` 來將 `async_generator` 轉換成 `async` 的 context manager <br>
-所以應該要為 `get_db` 加上 `@contextlib.asynccontextmanager` <br>
-
-<br>
-
-`database/generic.py`
-```python
-
-from contextlib import asynccontextmanager
-
-@asynccontextmanager # <--- 新增
-async def get_db():
-    async with SessionLocal() as db:
-        async with db.begin():
-            yield db
-# ...
-```
-
-<br>
-
-那上面直接使用 `async with get_db() as db_session` 來取得 `AsyncSession` 操作 DB 的方式就可以了 ! <br>
-
-`crud/users.py`
-```python
-
-# ...
-
-async def get_users(self,keyword:str=None,last:int=0,limit:int=50):
-        async with get_db() as db_session:
-            stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
-            if keyword:
-                stmt = stmt.where(UserModel.name.like(f"%{keyword}%"))
-            stmt = stmt.offset(last).limit(limit)
-            # result = await self.db_session.execute(stmt)
-            result = await db_session.execute(stmt)
-            users = result.all()
-
-            return users
-
-# ...
-```
-現在這樣寫就可以正常執行了！ <br>
-
-## 使用 `decorator` 來注入 `AsyncSession`
-
+- 將原本 `sync` 的 code 切到 `/sync/api/xxx` <br>
+    原本的 `/api/xxx` 改為 `async` <br>
+- 設定 SQLAlchemy 以 `async` 的方式來存取 DB <br>
+- 透過 `Depends` 將 `AsyncSession` 注入到 CRUD function
+- 透過 `ab` benchmark 後 <br>
+    發現 `async` 的 performance 會隨著 concurrency 的增加而變好 <br>
+    但是在低 concurrency 的時候，反而 `sync` 的 performance 比 `async` 好 <br>
 
