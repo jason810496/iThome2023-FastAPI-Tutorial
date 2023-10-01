@@ -8,7 +8,7 @@ from sync.crud import items as ItemCrud
 
 router = APIRouter(
     tags=["items"],
-    prefix="/api"
+    prefix="/sync/api"
 )
 
 

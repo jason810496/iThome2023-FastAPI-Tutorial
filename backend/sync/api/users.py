@@ -8,7 +8,7 @@ from sync.crud import users as UserCrud
 
 router = APIRouter(
     tags=["users"],
-    prefix="/api",
+    prefix="/sync/api",
 )
 
 
