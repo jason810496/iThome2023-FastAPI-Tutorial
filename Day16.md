@@ -81,7 +81,7 @@ class UserCrud:
     # ... CRUD functions
 ```
 直接這樣寫的話，會報錯如下：
-![depends crud error]()
+![depends crud error](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day16/depends-crud-error.png)
 寫著 `AttributeError: 'Depends' object has no attribute 'execute'` ：`Depends` 沒有 `execute` 的屬性 <br>
 但依照我們的邏輯，`self.db_session` 應該是 `AsyncSession` 才對啊（？ <br>
 這是因為在 FastAPI 中，**`Depends` 必須要寫在 API endpoint 的 handle funtion 中** ! <br>
@@ -116,7 +116,7 @@ class UserCrud:
 <br>
 
 這樣寫的話，會報錯如下：
-![without depends error]()
+![without depends error](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day16/without-depends-error.png)
 
 寫著 `TypeError: 'async_generator' object does not support the asynchronous context manager protocol` <br>
 查看 [FastAPI Doc 中，與 Depends 和 yield 相關的部分](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/) <br>
