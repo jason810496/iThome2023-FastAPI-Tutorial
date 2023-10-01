@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException, status , Depends
 from typing import List 
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas import users as UserSchema
 from api.depends import check_user_id , pagination_parms
 from crud import users as UserCrud
+from crud.users import UserCrudManager , get_user_crud_manager
+from database.generic import get_db
 
 
 router = APIRouter(
@@ -11,14 +14,31 @@ router = APIRouter(
     prefix="/api",
 )
 
+# db_depends:AsyncSession = Depends(get_user_crud_manager)
+# db_depends = UserCrudManager()
 
+userCrud = UserCrudManager()
+
+
+
+
+# @router.get("/users", 
+#         response_model=List[UserSchema.UserRead],
+#         response_description="Get list of user",  
+# )
+# async def get_users(page_parms:dict= Depends(pagination_parms),db_session:AsyncSession=db_depends):
+#     users = await UserCrud.get_users(db_session,**page_parms)
+#     return users
+
+# UserCRUD = UserCrudManager(Depends(get_db))
 
 @router.get("/users", 
         response_model=List[UserSchema.UserRead],
         response_description="Get list of user",  
 )
-def get_users(page_parms:dict= Depends(pagination_parms)):
-    users = UserCrud.get_users(**page_parms)
+async def get_users(page_parms:dict= Depends(pagination_parms)):
+    # users = await UserCrud.get_users(**page_parms)
+    users = await userCrud.get_users(**page_parms)
     return users
 
 @router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
