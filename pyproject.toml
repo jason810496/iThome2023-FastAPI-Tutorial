@@ -16,6 +16,9 @@ sqlalchemy = "^2.0.21"
 psycopg2-binary = "^2.9.7"
 pymysql = "^1.1.0"
 cryptography = "^41.0.4"
+asyncpg = "^0.28.0"
+greenlet = "^2.0.2"
+aiomysql = "^0.2.0"
 
 
 [build-system]
