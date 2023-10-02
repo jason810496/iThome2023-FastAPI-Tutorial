@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine , async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase 
+from sqlalchemy.schema import CreateTable
 
 from setting.config import get_settings
+from models.user import User
+from models.item import Item
 
 settings = get_settings()
 
@@ -26,8 +29,10 @@ async def get_db():
             yield db
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async with SessionLocal() as db:
+        async with db.begin():
+            await db.execute(CreateTable(User.__table__,if_not_exists=True))
+            await db.execute(CreateTable(Item.__table__,if_not_exists=True))
 
 async def close_db():
     async with engine.begin() as conn:
