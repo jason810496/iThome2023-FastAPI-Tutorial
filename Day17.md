@@ -137,7 +137,7 @@ docker exec -it fastapi_postgres_dev psql -U fastapi_tutorial
 \d "User" -- describe table "User"
 ```
 
-![docker exec psql]()
+![docker exec psql](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day17/docker-exec-psql.png)
 
 <br>
 
@@ -146,7 +146,7 @@ docker exec -it fastapi_postgres_dev psql -U fastapi_tutorial
 SELECT * FROM "User";
 ```
 
-![select users]()
+![select users](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day17/select-users.png)
 
 可以看到 `password` 欄位中的密碼都是 hash 過的密碼 ! <br>
 
