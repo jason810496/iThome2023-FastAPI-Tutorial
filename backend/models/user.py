@@ -10,12 +10,12 @@ from models.base import Base , BaseType
 class User(Base):
     __tablename__ = "User"
     id:Mapped[BaseType.int_primary_key]
-    password:Mapped[BaseType.str_50]
+    password:Mapped[BaseType.str_60]
     name:Mapped[BaseType.str_30]
     age:Mapped[int]
     avatar:Mapped[BaseType.optional_str_100]
     birthday:Mapped[date] = mapped_column(Date)
-    email:Mapped[BaseType.str_50]
+    email:Mapped[BaseType.str_60]
     create_time:Mapped[BaseType.update_time]
 
     items:Mapped[list["Item"]] \
@@ -28,7 +28,7 @@ class User(Base):
 
     def __init__(self, password:str, name:str, age:int, avatar:Optional[str], birthday:date, email:str) -> None:
         # password should be hashed before store in database , here is just for demo
-        self.password = hashlib.md5(password.encode()+b'secret').hexdigest()
+        self.password = password
         self.name = name
         self.age = age
         self.avatar = avatar

@@ -4,6 +4,7 @@ from typing import List
 from schemas import users as UserSchema
 from api.depends import check_user_id , pagination_parms
 from crud.users import UserCrudManager
+from auth.passwd import get_password_hash
 
 
 router = APIRouter(
@@ -53,6 +54,7 @@ async def create_user(newUser: UserSchema.UserCreate ):
     if user:
         raise HTTPException(status_code=409, detail=f"User already exists")
     
+    newUser.password = get_password_hash(newUser.password)
     user = await UserCrud.create_user(newUser)
     return vars(user)
 
