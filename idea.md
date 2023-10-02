@@ -48,7 +48,7 @@ FastAPI RestfulAPI 前後端分離的支柱
 - [Day15] 架構優化：非同步存取 DB
 - [Day16] 架構優化：透過 Depends 注入非同步 DB Session 到 CRUD
 - [Day17] OAuth2 實例：OAuth2 Login / Refresh JWT 機制
-    - 分為三個 router : 
+    <!-- - 分為三個 router : 
         - /auth
         - /user
         - /me ( protected router)
@@ -56,7 +56,7 @@ FastAPI RestfulAPI 前後端分離的支柱
             - country
             - avatar
             - money
-            - address
+            - address -->
 - [Day19] OAuth2 實例：內建 OAuth2_schema
 - [Day20] OAuth2 實例：密碼驗證
 - [Day21] OAuth2 實例： JWT 驗證
