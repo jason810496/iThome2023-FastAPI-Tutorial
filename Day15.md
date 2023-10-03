@@ -270,6 +270,31 @@ async def close_db():
 > 接下來都先以 get users 為例 <br>
 <br>
 
+## 解決在 SQLAlchemy 2.0 中 `AsyncEngine` 無法直接使用 `create_all` 的問題
+
+在 SQLAlchemy 2.0 中，使用 `AsyncEngine` 在跑 `create_all` 時並不會成功 create tables<br>
+所以我們可以透過在 `AsyncSession` 中使用 `CreateTable` 來解決這個問題 <br>
+
+<br>
+
+`database/generic.py`
+```python
+async def init_db():
+    async with SessionLocal() as db:
+        async with db.begin():
+            await db.execute(CreateTable(User.__table__,if_not_exists=True))
+            await db.execute(CreateTable(Item.__table__,if_not_exists=True))
+```
+> 雖然在官方 Doc 中有提到 `AsyncEngine` 可以使用 `create_all` 來 create table <br>
+> 但不知道為什麼我在使用 `create_all` 時，並不會真的 create table <br>
+
+<br>
+
+這邊要注意的是，我們需要在 `async with db.begin()` 中使用 `await db.execute(CreateTable(...))` <br>
+並且要使用 `if_not_exists=True` 來避免重複 create table  error <br>
+這樣就可以成功的 create table 了 <br>
+
+
 ## 在 CRUD function 中注入 `AsyncSession`   
 `crud/users.py`
 ```python
