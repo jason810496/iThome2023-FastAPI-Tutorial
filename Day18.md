@@ -329,13 +329,13 @@ async def refresh(refersh_data: RefreshRequest):
 <br>
 
 如果我們拿一個過期的 refresh token 來測試 <br>
-![expired token](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day18/swagger-expired-token.png)
+![expired token](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day18/expired-token.png)
 就會回傳 401 Unauthorized ， 並且告知 Token expired <br>
 
 <br>
 
 以一個正確的 refresh token 來測試 <br>
-![correct token](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day18/swagger-correct-token.png)
+![correct token](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day18/correct-token.png)
 就可以拿到新的 access token 和 refresh token ! <br>
 
 ## 總結
