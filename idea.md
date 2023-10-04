@@ -60,7 +60,9 @@ FastAPI RestfulAPI 前後端分離的支柱
 - [Day19] OAuth2 實例：內建 OAuth2_schema
 - [Day20] OAuth2 實例：密碼驗證
 - [Day21] OAuth2 實例： JWT 驗證
-- [Day22] OAuth2 實例：需要 Authorize 的 router
+- [Day22] OAuth2 實例：Authorize Dependency
+    - login 驗證
+    - get curent user dependency
     - 將 OAuth2_schema 設為 Depends
 - [Day23] OAuth2 實例：User api & CRUD
 - [Day24] OAuth2 實例：Me api & CRUD
