@@ -235,7 +235,7 @@ async def refresh(refersh_data: RefreshRequest):
 改為打自己 ( `test` 用戶) 的 `PUT /api/users/2` 時 <br>
 就可以成功更新 <br>
 
-![update user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day19/update-user.png)
+![update user 2](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day19/update-user-2.png)
 
 <br>
 
