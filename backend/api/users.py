@@ -4,7 +4,10 @@ from typing import List
 from schemas import users as UserSchema
 from api.depends import check_user_id , pagination_parms
 from crud.users import UserCrudManager
+
 from auth.passwd import get_password_hash
+from auth.jwt import verify_access_token
+from auth.utils import get_current_user
 
 
 router = APIRouter(
@@ -24,9 +27,9 @@ async def get_users(page_parms:dict= Depends(pagination_parms)):
     return users
 
 @router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
-async def get_user_by_id(user_id: int):
+async def get_user_infor_by_id(user_id: int):
 
-    user = await UserCrud.get_user_by_id(user_id)
+    user = await UserCrud.get_user_infor_by_id(user_id)
     if user:
         return user
         
@@ -59,14 +62,19 @@ async def create_user(newUser: UserSchema.UserCreate ):
     return vars(user)
 
 @router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse )
-async def update_user(newUser: UserSchema.UserUpdate,user_id:int=Depends(check_user_id) ):
+async def update_user(newUser: UserSchema.UserUpdate,user_id:int=Depends(check_user_id),user = Depends(get_current_user) ):
     
+    if user.id != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    newUser.password = get_password_hash(newUser.password)
     await UserCrud.update_user(newUser,user_id)
     return newUser
 
 @router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user_password(newUser:UserSchema.UserUpdatePassword,user_id:int=Depends(check_user_id)):
 
+    newUser.password = get_password_hash(newUser.password)
     await UserCrud.update_user_password(newUser,user_id)
     return 
 

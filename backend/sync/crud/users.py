@@ -18,7 +18,7 @@ def get_users(keyword:str=None,last:int=0,limit:int=50):
 
     return users
 
-def get_user_by_id(user_id: int):
+def get_user_infor_by_id(user_id: int):
 
     stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar).where(UserModel.id == user_id)
     user = db_session.execute(stmt).first()

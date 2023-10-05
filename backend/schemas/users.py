@@ -56,3 +56,7 @@ class UserUpdateResponse(UserBase):
 class UserUpdatePassword(BaseModel):
     password:str
 
+class UserInDB(BaseModel):
+    id: int
+    name: str
+    password: str

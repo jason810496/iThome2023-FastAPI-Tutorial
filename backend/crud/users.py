@@ -24,10 +24,19 @@ class UserCrudManager:
 
         return users
 
-    async def get_user_by_id(self,user_id: int,db_session:AsyncSession):
+    async def get_user_infor_by_id(self,user_id: int,db_session:AsyncSession):
 
         stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar).where(UserModel.id == user_id)
         user = (await db_session.execute(stmt)).first()
+        if user:
+            return user
+            
+        return None
+    
+    async def get_user_by_id(self,user_id: int,db_session:AsyncSession=None):
+        stmt = select(UserModel.email,UserModel.name,UserModel.id).where(UserModel.id == user_id)
+        result = await db_session.execute(stmt)
+        user = result.first()
         if user:
             return user
             
@@ -44,6 +53,15 @@ class UserCrudManager:
 
     async def get_user_id_by_id(self,user_id: int,db_session:AsyncSession=None):
         stmt = select(UserModel.id).where(UserModel.id == user_id)
+        result = await db_session.execute(stmt)
+        user = result.first()
+        if user:
+            return user
+            
+        return None
+    
+    async def get_user_in_db(self,email: str,db_session:AsyncSession=None) -> UserSchema.UserInDB :
+        stmt = select(UserModel.id,UserModel.name,UserModel.password).where(UserModel.email == email)
         result = await db_session.execute(stmt)
         user = result.first()
         if user:
