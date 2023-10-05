@@ -305,12 +305,11 @@ async def update_user(
 今天我們完成了 OAuth2 password login 的實作 <br>
 並且實作了 Authorize Dependency 和 權限管理 <br>
 也完成 JWT token 的 Refresh 換發機制 <br>
-正式完成了 OAuth2 password login + JWT 的實作 ! <br>
 
 <br>
 
-明天我們會來寫 `Pytest` 來測試我們的 API Endpoint <br>
-幫助我們更快速的檢查當前的 API Endpoint 是否正常運作 <br>
+明天我們把到目前的專案整理一下 <br>
+為目前 OAuth2 password login 的實作做一個總結 <br>
 
 ## Reference
 
