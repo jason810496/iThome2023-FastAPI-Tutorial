@@ -22,9 +22,9 @@ def get_users(page_parms:dict= Depends(pagination_parms)):
     return users
 
 @router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
-def get_user_by_id(user_id: int):
+def get_user_infor_by_id(user_id: int):
 
-    user = UserCrud.get_user_by_id(user_id)
+    user = UserCrud.get_user_infor_by_id(user_id)
     if user:
         return user
         

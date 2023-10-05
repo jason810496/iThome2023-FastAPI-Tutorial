@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from fastapi import HTTPException
+
 from jose import jwt , JWTError
 from jose.exceptions import ExpiredSignatureError , JWTError
 
@@ -29,7 +31,7 @@ async def create_token_pair(access_data: dict,refresh_data:dict) -> Token:
     refresh_token = await create_refresh_token(refresh_data)
     return Token(access_token=access_token,refresh_token=refresh_token,token_type="bearer")
 
-from fastapi import HTTPException
+
 async def verify_refresh_token(token: str):
     try:
         payload = jwt.decode(token, settings.refresh_token_secret)
@@ -41,4 +43,26 @@ async def verify_refresh_token(token: str):
             headers={"WWW-Authenticate": "Bearer"}
         )
     except JWTError:
-        return None
+        raise  HTTPException(
+            status_code=401,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    
+
+async def verify_access_token(token: str):
+    try:
+        payload = jwt.decode(token, settings.access_token_secret)
+        return payload
+    except ExpiredSignatureError:
+        raise  HTTPException(
+            status_code=401,
+            detail="Token expired",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    except JWTError:
+        raise  HTTPException(
+            status_code=401,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
