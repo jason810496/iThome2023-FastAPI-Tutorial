@@ -14,9 +14,9 @@ if settings.run_mode == "ASYNC":
     from database.generic import init_db , close_db
 
     app.include_router(auth_router)
-    app.include_router(infor_router)
     app.include_router(user_router)
     app.include_router(item_router)
+    app.include_router(infor_router)
 
     @app.on_event("startup")
     async def startup():
