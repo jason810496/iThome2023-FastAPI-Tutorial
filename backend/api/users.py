@@ -17,6 +17,8 @@ router = APIRouter(
 
 UserCrud = UserCrudManager()
 
+Exception403 = HTTPException(status_code=403, detail="Permission denied")
+
 
 @router.get("/users", 
         response_model=List[UserSchema.UserRead],
@@ -57,24 +59,30 @@ async def create_user(newUser: UserSchema.UserCreate ):
     if user:
         raise HTTPException(status_code=409, detail=f"User already exists")
     
-    newUser.password = get_password_hash(newUser.password)
     user = await UserCrud.create_user(newUser)
     return vars(user)
 
 @router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse )
-async def update_user(newUser: UserSchema.UserUpdate,user_id:int=Depends(check_user_id),user = Depends(get_current_user) ):
+async def update_user(
+    newUser: UserSchema.UserUpdate,
+    user_id:int=Depends(check_user_id),
+    user:UserSchema.CurrentUser = Depends(get_current_user) ):
     
     if user.id != user_id:
-        raise HTTPException(status_code=403, detail="Permission denied")
+        raise Exception403
 
-    newUser.password = get_password_hash(newUser.password)
     await UserCrud.update_user(newUser,user_id)
     return newUser
 
 @router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT)
-async def update_user_password(newUser:UserSchema.UserUpdatePassword,user_id:int=Depends(check_user_id)):
+async def update_user_password(
+    newUser:UserSchema.UserUpdatePassword,
+    user_id:int=Depends(check_user_id),
+    user:UserSchema.CurrentUser = Depends(get_current_user) ):
 
-    newUser.password = get_password_hash(newUser.password)
+    if user.id != user_id:
+        raise Exception403
+
     await UserCrud.update_user_password(newUser,user_id)
     return 
 
@@ -85,7 +93,12 @@ async def create_user_deprecated(newUser: UserSchema.UserCreate ):
     return "deprecated"
 
 @router.delete("/users/{user_id}",status_code=status.HTTP_204_NO_CONTENT )
-async def delete_users(user_id:int = Depends(check_user_id) ):
+async def delete_users(
+    user_id:int = Depends(check_user_id),
+    user:UserSchema.CurrentUser = Depends(get_current_user) ):
+
+    if user.id != user_id:
+        raise Exception403
 
     await UserCrud.delete_user(user_id)
     return 

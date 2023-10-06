@@ -1,11 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select , update , delete
-import hashlib
 
 
-from database.generic import get_db , crud_class_decorator
+from database.generic import crud_class_decorator
 from models.user import User as UserModel 
 from schemas import users as UserSchema
+
+from auth.passwd import get_password_hash
 
 
 
@@ -73,7 +74,7 @@ class UserCrudManager:
     async def create_user(self,newUser: UserSchema.UserCreate, db_session:AsyncSession=None ):
         user = UserModel(
             name=newUser.name,
-            password=newUser.password,
+            password=get_password_hash(newUser.password),
             age=newUser.age,
             birthday=newUser.birthday,
             email=newUser.email,
@@ -88,7 +89,6 @@ class UserCrudManager:
     async def update_user(self,newUser: UserSchema.UserUpdate,user_id:int, db_session:AsyncSession=None):
         stmt = update(UserModel).where(UserModel.id == user_id).values(
             name=newUser.name,
-            password=newUser.password,
             age=newUser.age,
             birthday=newUser.birthday,
             avatar=newUser.avatar
@@ -101,7 +101,7 @@ class UserCrudManager:
     
     async def update_user_password(self,newUser:UserSchema.UserUpdatePassword,user_id:int, db_session:AsyncSession=None):
         stmt = update(UserModel).where(UserModel.id == user_id).values(
-            password=hashlib.md5(b'secret'+newUser.password.encode().hexdigest())
+            password=get_password_hash(newUser.password)
         )
 
         await db_session.execute(stmt)

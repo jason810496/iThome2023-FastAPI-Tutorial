@@ -42,7 +42,6 @@ class UserRead(UserBase):
     avatar: Optional[str] = None
 
 class UserUpdate(UserBase):
-    password: Optional[str] = Field(min_length=6)
     avatar: Optional[str] = None
     age: Optional[int] = Field(gt=0,lt=100)
     birthday: Optional[date] = Field()
@@ -60,3 +59,8 @@ class UserInDB(BaseModel):
     id: int
     name: str
     password: str
+
+class CurrentUser(BaseModel):
+    id: int
+    name: str
+    email: str
