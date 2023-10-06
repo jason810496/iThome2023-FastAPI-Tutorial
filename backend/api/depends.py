@@ -8,10 +8,10 @@ from sqlalchemy import select
 from models.user import User as UserModel
 from database.generic import get_db
 from crud.users import UserCrudManager
+from crud.items import ItemCrudManager
 
 UserCrud = UserCrudManager()
-
-
+ItemCrud = ItemCrudManager()
 
 async def check_user_id(user_id:int):
     user = await UserCrud.get_user_id_by_id(user_id)
@@ -20,15 +20,12 @@ async def check_user_id(user_id:int):
         raise HTTPException(status_code=404, detail="User not found")
     return user.id
 
-def check_item_id(item_id:int):
-    db_session:Session = get_db()
+async def check_item_id(item_id:int):
+    item = await ItemCrud.get_item_in_db_by_id(item_id)
 
-    stmt = select(UserModel.id).where(UserModel.id == item_id)
-    user = db_session.execute(stmt).first()
-
-    if not user:
+    if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    return user.id
+    return item
 
 def pagination_parms(keyword:Optional[str]=None,last:int=0,limit:int=50):
     return {
