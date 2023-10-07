@@ -41,7 +41,8 @@ class UserRead(UserBase):
     email: str
     avatar: Optional[str] = None
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
+    name : Optional[str] = None
     avatar: Optional[str] = None
     age: Optional[int] = Field(gt=0,lt=100)
     birthday: Optional[date] = Field()
