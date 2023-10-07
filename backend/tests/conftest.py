@@ -1,9 +1,9 @@
 import os 
-from argparse import ArgumentParser
 from dotenv import load_dotenv
 import pytest_asyncio
 import pytest
 import asyncio
+from httpx import AsyncClient
 
 
 def pytest_addoption(parser):
@@ -37,3 +37,10 @@ async def dependencies(request):
 
     os.environ["DB_TYPE"] = args.getoption("db")
     print("DB_TYPE",os.getenv("DB_TYPE"))
+
+
+@pytest_asyncio.fixture(scope="module")
+async def async_client(dependencies) -> AsyncClient:
+    from .app import app
+    async with AsyncClient(app=app,base_url="http://test") as client:
+        yield client
