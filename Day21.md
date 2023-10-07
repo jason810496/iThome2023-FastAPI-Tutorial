@@ -330,9 +330,9 @@ async def test_users(async_client):
 
 ## Reference
 
-[test setup](https://testdriven.io/blog/fastapi-crud/#test-setup)
-[How to pass arguments in `pytest` by command line ?](https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line#answer-53383793)
-[`pytest` : Quick start fixture & fixture scope](https://docs.pytest.org/en/7.1.x/how-to/fixtures.html#fixture-scopes)
-[pytest fixture scope](https://pytest-with-eric.com/pytest-advanced/pytest-fixture-scope/)
-[using module with pytest mark asyncio](https://stackoverflow.com/questions/56236637/using-pytest-fixturescope-module-with-pytest-mark-asyncio)
+- [test setup](https://testdriven.io/blog/fastapi-crud/#test-setup)
+- [How to pass arguments in `pytest` by command line ?](https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line#answer-53383793)
+- [`pytest` : Quick start fixture & fixture scope](https://docs.pytest.org/en/7.1.x/how-to/fixtures.html#fixture-scopes)
+- [pytest fixture scope](https://pytest-with-eric.com/pytest-advanced/pytest-fixture-scope/)
+- [using module with pytest mark asyncio](https://stackoverflow.com/questions/56236637/using-pytest-fixturescope-module-with-pytest-mark-asyncio)
 
