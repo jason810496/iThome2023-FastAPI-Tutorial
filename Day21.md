@@ -84,7 +84,7 @@ def pytest_addoption(parser):
 poetry run pytest --help
 ```
 
-![custom-arguments]()
+![custom-arguments](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day21/custom-arguments.png)
 
 ## 建立測試用的 FastAPI app
 
@@ -251,7 +251,7 @@ def test_user():
 poetry run pytest
 ```
 
-![pytest first run]()
+![pytest first run](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day21/pytest-first-run.png)
 
 會看到 `pytest` 會自動找到 `tests` 目錄中以 `test_` 開頭的 .py 檔<br>
 並執行這些檔案中以 `test_` 開頭的 function <br>
@@ -295,7 +295,7 @@ async def test_get_users(async_client):
 ```
 
 但是會發現顯示 `skipped` <br>
-![pytest skipped]()
+![pytest skipped](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day21/pytest-skipped.png)
 
 ### 使用 `mark.asyncio` decorator
 
@@ -313,7 +313,7 @@ async def test_users(async_client):
     assert response.status_code == 200 
 ```
 
-![first passed]()
+![first passed](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day21/first-passed.png)
 
 可以看到 `test_users.py` 中的 `test_get_users` 通過了測試! <br>
 
