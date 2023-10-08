@@ -10,7 +10,7 @@
 
 可以任意在 backend Container 中任意切換 DB 進行測試
 
-| ![mysql pytest](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day23/mysql-pytest.png) | ![postgresql pytest](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day23/postgresql-pytest.png) |
+| ![mysql pytest](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day23/pytest-mysql.png) | ![postgresql pytest](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day23/pytest-postgresql.png) |
 | :----------------: | :-------------------: |
 
 
