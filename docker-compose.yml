@@ -1,0 +1,51 @@
+version: '1.0'
+
+services:
+  postgresql_db:
+    image: postgres:15.1
+    expose:
+      - 5432
+    env_file:
+      - db.postgresql.env
+    restart: always
+    volumes:
+      - ./db_volumes/postgresql:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "fastapi_tutorial"]
+      interval: 2s
+      timeout: 5s
+      retries: 3
+
+  mysql_db:
+    image: mysql:8.1.0
+    expose:
+      - 3306
+    env_file:
+      - db.mysql.env
+    restart: always
+    volumes:
+      - ./db_volumes/mysql:/var/lib/mysql/
+    healthcheck:
+      test: ["CMD", "echo" , ">/dev/tcp/localhost/3306"]
+      interval: 2s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    build: ./backend
+    ports:
+      - 8000:8003
+    volumes:
+      - ./backend/:/usr/backend/
+    command: python3 run.py --prod
+    # command: python3 run.py --prod --db mysql
+    restart: always
+    depends_on:
+      postgresql_db:
+        condition: service_healthy
+      mysql_db:
+        condition: service_healthy
+
+networks:
+  default: 
+    name: fastapi_tutorial_network
