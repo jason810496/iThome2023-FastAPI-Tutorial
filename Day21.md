@@ -1,4 +1,4 @@
-# 測試：[Day21] Pytest 入門與安裝
+# [Day21] 測試： Pytest 安裝與初步設定
 
 > **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day21 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day21)** <br>
 
