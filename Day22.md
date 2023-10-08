@@ -54,8 +54,7 @@ touch tests/data/user_data.json
 
 接著就可以放心使用 ChatGPT 來幫我們產生合法的隨機測試資料了 !<br>
 
-![chatgpt data]()
-
+![chatgpt data](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day22/chatgpt-data.png)
 
 <br>
 
