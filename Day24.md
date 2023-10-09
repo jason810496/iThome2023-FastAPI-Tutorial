@@ -55,13 +55,13 @@ docker run --name fastapi_redis_dev -p 6379:6379 -d  redis:7.2.1 --requirepass "
 
 <br>
 
-![redis insight 1]()
+![redis insight 1](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/redis-insight-1.png)
 ( Redis Insight 首頁 ) <br>
 
-![redis insight 2]()
+![redis insight 2](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/redis-insight-2.png)
 ( Redis Insight 中的 Key List ) <br>
 
-![redis insight password]()
+![redis insight password](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/redis-insight-password.png)
 ( 第一次連的時候要記得在右側設定密碼 ) <br>
 
 ### Redis Connection
@@ -132,11 +132,12 @@ def test_redis_connection_pool():
 poetry run pytest tests/test_redis.py
 ```
 
-![pytest redis]()
+![pytest redis](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/pytest-redis.png)
+( 可以看到測試通過 ) <br>
 可以看到測試通過 <br>
 
 也可以在 `redis insight` 中看到我們剛剛新增的 `foo` 與 `foo2` <br>
-![redis insight 3]()
+![redis insight 3](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/redis-insight-3.png)
 ( 可以看到剛剛設定的 `foo:bar` 和 `foo2:bar2` ) <br>
 
 ## Redis Async Connection
