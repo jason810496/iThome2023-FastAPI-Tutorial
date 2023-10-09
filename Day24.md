@@ -325,16 +325,20 @@ REDIS_URL = "redis://localhost:6379"
 ## 總結
 
 今天我們透過 `redis-py` 連接 `Redis Server` <br>
-以 `Redis` 或 `ConnectionPool` 來管理連線 <br>
+透過 `Redis` 或 `ConnectionPool` 來管理連線 <br>
 以 `sync` 與 `async` 的方式來操作 `get` 與 `set` operations <br>
 > `async` 版本的 `redis` 需要使用 `await` 來取得結果 <br>
-以及透過 `redis-om` 來實作 `Redis Object Mapper` <br>
+
+<br>
+
+以及使用 `redis-om` 來實作 `Redis Object Mapper` <br>
 > 但是 `redis-om`使用 `find` 
 > Image 需要使用 `redis/redis-stack` 才能正常運作 <br>
 
 <br>
 
-在下一篇文章中，我們就可以正式開始實作 `Redis Cache` 了 <br>
+在下一篇文章中 <br>
+我們就可以正式開始實作 `Redis Cache` 了 <br>
 
 
 ## Reference
