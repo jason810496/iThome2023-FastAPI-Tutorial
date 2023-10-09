@@ -16,6 +16,8 @@ redis :
 [redis py github](https://github.com/redis/redis-py)
 > `aioredis` has been intergrated into `redis-py` since `v3.5.0`
 
+[async redis python example](https://redis-py.readthedocs.io/en/stable/examples/asyncio_examples.html)
+
 [use redis](https://blog.csdn.net/wgPython/article/details/107668521)
     - [redis client setup example](https://github.com/tiangolo/fastapi/issues/1694)
 
