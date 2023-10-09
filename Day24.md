@@ -245,8 +245,6 @@ class UserReadCache( HashModel ):
 ```
 
 
-https://juejin.cn/post/6974299485983735822
-
 ## Reference
 
 - [redis py github](https://github.com/redis/redis-py)
@@ -255,3 +253,4 @@ https://juejin.cn/post/6974299485983735822
 - [redis client setup example](https://github.com/tiangolo/fastapi/issues/1694)
 - [redis developer : fastapi example](https://github.com/redis-developer/fastapi-redis-tutorial/blob/master/app/main.py)
 - [flask with redis-om example](https://redis.io/docs/clients/om-clients/stack-python/)
+- [fastapi redis cache setting](https://juejin.cn/post/6974299485983735822)
