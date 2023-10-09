@@ -1,6 +1,6 @@
-## [Day24] 架構優化: Redis Cache , `redis-py` 架構初探
+## [[Day24]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day24) 架構優化: Redis Cache , `redis-py` 架構初探
 
-> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day23 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day23)** <br>
+> **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day24 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day24)** <br>
 
 ## 前言
 
@@ -244,6 +244,97 @@ class UserReadCache( HashModel ):
     class Meta:
         database = redis
 ```
+
+### `save` 、 `get` 操作
+
+如果要透過 `Redis Object Mapper` 來存取資料 <br>
+我們必須要透過類似 `SQLAlchemy` 的方式來操作 <br>
+使用 `Object.save()` 來存入資料 <br>
+跑過 `Object.save()` 後，會自動產生一個 `primary key`， 可以透過 `Object.pk` 來取得 <br>
+接著可以使用 `Object.get( pk )` 來取得資料 <br>
+
+<br>
+
+`tests/test_redis_om.py` <br>
+```python
+
+def test_create_user():
+    new_user = UserReadCache(id=1,name="json_user",email="json_user@email.com",avatar="image_url")
+    new_user.save() # <--- 透過 save 來存入資料
+    pk = new_user.pk # <--- 取得 primary key
+    assert UserReadCache.get(pk) == new_user # <--- 透過 get 來取得資料
+```
+
+### `redis-om` 的`find` 大坑
+
+在 `redis-om` 的 [doc](https://github.com/redis/redis-om-python#querying) 中有提到，我們可以透過 `Object.find()` 來查詢資料 <br>
+但是需要先透過 `Migrator` 來建立 `index` <br>
+
+<br>
+
+`tests/test_redis_om.py` <br>
+```python
+from redis_om import Migrator
+
+# ...
+
+Migration().run() # <--- 透過 Migrator 來建立 index
+
+# ...
+
+def test_find_user_hash():
+    user_be_found = UserReadCache(id=1,name="json_user",email="json_user@email.com",avatar="image_url")
+    result = UserReadCache.find( UserReadCache.id==1 ).first() # <--- 透過 find 來查詢資料
+    assert result.id == user_be_found.id
+    assert result.name == user_be_found.name
+```
+
+但是會一直跳出 `TypeError: 'NoneType' object is not subscriptable` 的錯誤 <br>
+
+### `redis-stack` Image
+
+在查了很久後才發現：
+如果要使用 `redis-om` 的 `find` 功能，必須要使用 **`redis/redis-stack`** 來建立 `Redis Server`!<br>
+> ref : 
+>  [OM for Python : Flask and a simple domain model]
+> https://github.com/redis/redis-om-python/issues/532
+
+<br>
+
+所以把原本的 `redis:7.2.1` 改成 `redis/redis-stack:latest` <br>
+```bash
+docker run --name fastapi_redis_dev -p 6379:6379 -d  redis/redis-stack:latest 
+```
+> 但是 `redis/redis-stack` 沒辦法在 Container 中使用 `requirepass` 來設定密碼 <br>
+
+再將 `tests/test_redis_om.py` 中的 `REDIS_URL` 改成 `redis://localhost:6379` <br>
+```python
+REDIS_URL = "redis://localhost:6379"
+```
+
+<br>
+
+這樣不論是使用 `HashModel` 或是 `JsonModel` 都可以正常運作 <br>
+
+![pytest redis om](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/pytest-redis-om.png)
+( 可以看到測試通過 ) <br>
+
+![redis insight 4](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day24/redis-insight-4.png)
+( 可以看到剛剛設定的 `foo:bar` 和 `foo2:bar2` ) <br>
+
+## 總結
+
+今天我們透過 `redis-py` 連接 `Redis Server` <br>
+以 `Redis` 或 `ConnectionPool` 來管理連線 <br>
+以 `sync` 與 `async` 的方式來操作 `get` 與 `set` operations <br>
+> `async` 版本的 `redis` 需要使用 `await` 來取得結果 <br>
+以及透過 `redis-om` 來實作 `Redis Object Mapper` <br>
+> 但是 `redis-om`使用 `find` 
+> Image 需要使用 `redis/redis-stack` 才能正常運作 <br>
+
+<br>
+
+在下一篇文章中，我們就可以正式開始實作 `Redis Cache` 了 <br>
 
 
 ## Reference
