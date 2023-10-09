@@ -31,7 +31,7 @@ async def get_users(page_parms:dict= Depends(pagination_parms)):
 @router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
 async def get_user_infor_by_id(user_id: int):
 
-    user = await UserCrud.get_user_infor_by_id(user_id)
+    user = await UserCrud.get_user_infor_by_id(user_id=user_id)
     if user:
         return user
         
@@ -55,11 +55,11 @@ async def create_user(newUser: UserSchema.UserCreate ):
 
     """
 
-    user = await UserCrud.get_user_id_by_email(newUser.email)
+    user = await UserCrud.get_user_id_by_email(email=newUser.email)
     if user:
         raise HTTPException(status_code=409, detail=f"User already exists")
     
-    user = await UserCrud.create_user(newUser)
+    user = await UserCrud.create_user(newUser=newUser)
     return vars(user)
 
 @router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse )
@@ -71,7 +71,7 @@ async def update_user(
     if user.id != user_id:
         raise Exception403
 
-    await UserCrud.update_user(newUser,user_id)
+    await UserCrud.update_user(newUser=newUser,user_id=user_id)
     return newUser
 
 @router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT)
@@ -83,7 +83,7 @@ async def update_user_password(
     if user.id != user_id:
         raise Exception403
 
-    await UserCrud.update_user_password(newUser,user_id)
+    await UserCrud.update_user_password(newUser=newUser,user_id=user_id)
     return 
 
 
@@ -100,5 +100,5 @@ async def delete_users(
     if user.id != user_id:
         raise Exception403
 
-    await UserCrud.delete_user(user_id)
+    await UserCrud.delete_user(user_id=user_id)
     return 

@@ -14,6 +14,7 @@ class Settings():
     db_type:str = os.getenv("DB_TYPE").upper()
     run_mode:str = os.getenv("RUN_MODE").upper()
     database_url: str = os.getenv(f"{run_mode}_{db_type}_DATABASE_URL")
+    redis_url:str = os.getenv("REDIS_URL") 
 
     access_token_secret:str = os.getenv("ACCESS_TOKEN_SECRET")
     access_token_expire_minutes:int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
