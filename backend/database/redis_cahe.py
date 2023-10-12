@@ -1,74 +1,130 @@
-# import redis
+import redis
+from setting.config import get_settings
 
-import redis.asyncio as redis_async
-
-
-
-# redis_connection = redis.Redis(host='localhost', port=6379, db=0)
+settings = get_settings()
 
 
-redis_connection_pool = redis_async.ConnectionPool("redis://default@localhost:6379",decode_responses=True)
-r = redis_async.from_url("redis://default@localhost:6379",decode_responses=True)
-
-async def test_redis():
-    # client = redis_async.Redis(connection_pool=redis_connection_pool)
-    # client.set('foo', 'bar')
-    # value = client.get('foo')
-    # print(value)
-    # await client.close()
-    async with r.pipeline(transaction=True) as pipe:
-        ok = await pipe.set('foo', 'bar').execute() # return [True]
-        print("pip exe ok",ok)
-        value = await pipe.get('foo').execute() #return ['bar']
-        print("pipe value",value)
-
-def redis_cache_decorator(func):
-    # print("in db_context_decorator")
-    async def wrapper(*args, **kwargs):
-        await test_redis()
-        func_name = func.__name__
-        print("redis_cache_decorator:func_name",func_name)
-
-        verb = func_name.split('_')[0]
-        subject = func_name.split('_')[1]
-
-        # print key valye pair of kwargs
-        print("redis_cache_decorator:args",args)
-        print("redis_cache_decorator:kwargs",kwargs)
-
-        print("redis_cache_decorator:verb",verb)
-        print("redis_cache_decorator:subject",subject)
-
-        print("redis_cache_decorator:kwargs",kwargs)
-        prefix_key = ''
-        for k,v in kwargs.items():
-            if k != 'db_session' and v is not None:
-                prefix_key += f"{k}:{v}:"
-
-        print("redis_cache_decorator:prefix_key",prefix_key)
-
-        result = await func(*args, **kwargs)
-
-        print("result",result)
-        return result
-        # if kwargs:
-        #     key += str(kwargs)
-        # if redis_connection.exists(key):
-        #     print("get from cache")
-        #     return redis.get(key)
-        # else:
-        #     result = func(*args, **kwargs)
-        #     redis_connection.set(key, result)
-        #     return result
+redis_pool = redis.ConnectionPool.from_url(settings.redis_url,decode_responses=True)
 
 
-    # print("out db_context_decorator")
-    return wrapper
+def check_has_all_keys(result:dict,cls:object):
+    '''
+    check whether redis_result has all required field of current response schema
+    '''
+    result_keys = result.keys()
+    for key in cls.__annotations__.keys():
+        if key not in result_keys:
+            return False
+    return True
 
-def crud_cache_decorator(cls):
-    # print("in db_class_decorator")
-    for name, method in cls.__dict__.items():
-        if callable(method):
-            setattr(cls, name, redis_cache_decorator(method))
-    # print("out db_class_decorator")
-    return cls
+def sql_query_row_to_dict(row):
+    '''
+    deal with datetime object
+    '''
+
+    row = dict(row)
+    if row.get('birthday'):
+        row['birthday'] = row['birthday'].strftime("%Y-%m-%d")
+    return row
+
+def generic_cache_get(prefix:str,key:str,cls:object):
+    '''
+    prefix: namspace for redis key ( such as `user` 、`item` 、`article` )
+    key: **parameter name** in caller function ( such as `user_id` 、`email` 、`item_id` )
+    cls: **response schema** in caller function ( such as `UserSchema.UserRead` 、`UserSchema.UserId` 、`ItemSchema.ItemRead` )
+    '''
+
+    rc = redis.Redis(connection_pool=redis_pool)
+
+    def inner(func):
+        async def wrapper(*args, **kwargs):
+
+            # must pass parameter with key in caller function
+            value_key = kwargs.get(key) 
+            if not value_key:
+                return await func(*args, **kwargs)
+            
+            # key for redis cache 
+            cache_key = f"{prefix}:{value_key}"
+
+            # use try-except to improve performance instead of using `rc.exists(cache_key)`
+            try:
+                redis_result:dict = rc.hgetall(cache_key)
+
+                # we still have to check whether redis_result has all required field of current response schema
+                if check_has_all_keys(redis_result,cls): # cache hit !
+                    return cls(**redis_result) 
+            except:
+                pass
+            
+            sql_result = await func(*args, **kwargs) 
+            if not sql_result:
+                return None
+            
+            rc.hset(cache_key, mapping=sql_query_row_to_dict(sql_result))
+            return sql_result
+            
+        return wrapper
+    return inner
+
+def generic_cache_update(prefix:str,key:str):
+
+    # redis connection
+    rc = redis.Redis(connection_pool=redis_pool)
+
+    def inner(func):
+        async def wrapper(*args, **kwargs):
+            value_key = kwargs.get(key)
+            if not value_key:
+                return await func(*args, **kwargs)
+            
+            sql_result = await func(*args, **kwargs)
+
+            if not sql_result:
+                return None
+            
+            cache_key = f"{prefix}:{value_key}"
+            rc.hset(cache_key, mapping=sql_query_row_to_dict(sql_result)) # 1 hour
+            
+            return sql_result
+        return wrapper
+    return inner
+
+def generic_cache_delete(prefix:str,key:str):
+    rc = redis.Redis(connection_pool=redis_pool)
+
+    def inner(func):
+        async def wrapper(*args, **kwargs):
+            value_key = kwargs.get(key)
+            if not value_key:
+                return await func(*args, **kwargs)
+            
+            cache_key = f"{prefix}:{value_key}"
+
+            try:
+                rc.delete(cache_key)
+            except:
+                pass
+
+            return await func(*args, **kwargs)
+        return wrapper
+    return inner
+
+def user_cache_delete(prefix:str,key:str):
+
+    rc = redis.Redis(connection_pool=redis_pool)
+
+    def inner(func):
+        async def wrapper(*args, **kwargs):
+            value_key = kwargs.get(key)
+            if value_key:
+                cache_key = f"{prefix}:{value_key}"
+                if rc.exists(cache_key):
+                    redis_dict:dict = rc.hgetall(cache_key)
+
+                    rc.delete( f"{prefix}:{redis_dict['email']}"  )
+                    rc.delete( cache_key )
+
+            return await func(*args, **kwargs)
+        return wrapper
+    return inner
