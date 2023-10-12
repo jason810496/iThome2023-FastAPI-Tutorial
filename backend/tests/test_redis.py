@@ -1,6 +1,6 @@
 import redis
 
-REDIS_URL = "redis://:fastapi_redis_password@localhost:6379"
+REDIS_URL = "redis://localhost:6379"
 
 connection_pool = redis.ConnectionPool.from_url(REDIS_URL)
 
@@ -23,6 +23,13 @@ def test_redis_connection_pool():
     redis_connection.close()
 
     assert value.decode() == 'bar2'
+
+def test_redis_delete():
+    redis_connection = redis.Redis(connection_pool=connection_pool)
+    redis_connection.set('foo3', 'bar3')
+    redis_connection.delete('foo3')
+    assert redis_connection.exists('foo3') == 0
+    redis_connection.close()
 
 # def test_redis_pipeline():
 #     redis_connection = redis.Redis.from_url(REDIS_URL)

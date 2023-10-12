@@ -6,9 +6,29 @@ import random
 
 @lru_cache()
 def get_user_data():
-    with open("data/user_data.json") as f:
-        data = json.load(f)
+    data = []
+
+    for i in range(100):
+        data.append({
+            "name": f"bench_user_{i}",
+            "email": f"bench_user_{i}@email.com",
+            "password" : "123456",
+            "avatar": "avatar_url",
+            "age": 10,
+            "birthday": "2000-01-01"
+        })
+
     return data
+
+
+def get_random_user_list():
+    user_list = get_user_data()
+    data = []
+    for i in range(50000):
+        data.append(random.choice(user_list))
+
+    return data
+
 
 def get_random_user():
     return [ random.choice(get_user_data()) ]
@@ -98,14 +118,14 @@ async def test_get_users(async_client):
     assert response.status_code == 200
     assert list(response.json()[0].keys()) == [ "name","id","email","avatar"]
 
-@pytest.mark.parametrize("user",get_random_user())
+@pytest.mark.parametrize("user",get_random_user_list())
 @pytest.mark.asyncio
 async def test_get_user_by_id(async_client,user):
     user_id = await get_user_id(async_client,user)
     response = await async_client.get(f"/api/users/{user_id}")
 
     assert response.status_code == 200
-    assert list(response.json().keys()) == [ "name","id","birthday","age","avatar"] 
+    assert list(response.json().keys()) == [ "name","id","birthday","age","avatar"]
 
 @pytest.mark.asyncio
 async def test_get_user_not_found(async_client):

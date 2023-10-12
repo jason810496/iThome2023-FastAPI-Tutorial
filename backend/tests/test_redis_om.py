@@ -1,6 +1,8 @@
+import pytest
 from redis_om import get_redis_connection
 from redis_om import JsonModel , HashModel , Migrator , Field
-from typing import Optional
+from redis_om import NotFoundError
+from typing import Optional , List
 
 REDIS_URL = "redis://localhost:6379"
 
@@ -24,6 +26,9 @@ class UserHashCache( HashModel ):
 
     class Meta:
         database = redis
+
+class UserListHashCache( HashModel ):
+    list : List[UserHashCache] = Field(index=True)
 
 
 Migrator().run()
@@ -61,6 +66,52 @@ def test_find_user_hash():
     assert res.email == user_be_found.email
     assert res.avatar == user_be_found.avatar
 
+def test_update_user_json():
+    user_be_updated = UserJsonCache.find( UserJsonCache.id==1 ).first()
+    user_be_updated.name = "json_user_updated"
+    user_be_updated.save()
+
+    assert user_be_updated.name == "json_user_updated"
+
+def test_update_user_hash():
+    user_be_updated = UserHashCache.find( UserHashCache.id==2 ).first()
+    user_be_updated.name = "hash_user_updated"
+    user_be_updated.save()
+
+    assert user_be_updated.name == "hash_user_updated"
+
+def test_delete_user_json():
+    be_deleted = UserJsonCache.find( UserJsonCache.id==1 ).first()
+    UserJsonCache.delete(be_deleted.pk)
+    
+    with pytest.raises(NotFoundError) as e:
+        UserJsonCache.find( UserJsonCache.id==1 ).first()
+    assert e.type == NotFoundError
+
+def test_delete_user_hash():
+    be_deleted = UserHashCache.find( UserHashCache.id==2 ).first()
+    UserHashCache.delete(be_deleted.pk)
+
+    with pytest.raises(NotFoundError) as e:
+        UserHashCache.find( UserHashCache.id==2 ).first()
+
+    assert e.type == NotFoundError
+
+def test_create_user_list_hash():
+    # new_user1 = UserHashCache(id=3,name="hash_user1",email="hash_user1@email.com")
+    # new_user2 = UserHashCache(id=4,name="hash_user2",email="hash_user2@email.com")
+    # user_list = UserListHashCache(list=[ new_user1 , new_user2 ])
+
+    # user_list.save()
+    # pk = user_list.pk
+
+    # assert UserListHashCache.get(pk) == user_list
+
+    # try:
+    #     be_deleted = UserHashCache.find( UserHashCache.id==2 ).first()
+    #     UserHashCache.delete(be_deleted.pk)
+
+
 # try:
 #     print("Add new User")
 #     new_user = UserJsonCache(id=1,name="json_user",email="json_user@email.com")
@@ -85,3 +136,6 @@ def test_find_user_hash():
 #     print("not found")
 #     pass
 
+
+
+# test_delete_user_hash()
