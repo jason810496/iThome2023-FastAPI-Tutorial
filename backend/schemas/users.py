@@ -65,3 +65,12 @@ class CurrentUser(BaseModel):
     id: int
     name: str
     email: str
+
+class UserId(BaseModel):
+    id: int
+
+class UserInfor(UserBase):
+    id: int
+    birthday: date
+    age: int
+    avatar: Optional[str] = None

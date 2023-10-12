@@ -28,7 +28,7 @@ async def get_users(page_parms:dict= Depends(pagination_parms)):
     users = await UserCrud.get_users(**page_parms)
     return users
 
-@router.get("/users/{user_id}" , response_model=UserSchema.UserRead )
+@router.get("/users/{user_id}" , response_model=UserSchema.UserInfor )
 async def get_user_infor_by_id(user_id: int):
 
     user = await UserCrud.get_user_infor_by_id(user_id=user_id)

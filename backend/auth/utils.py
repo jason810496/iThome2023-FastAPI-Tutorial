@@ -10,7 +10,7 @@ async def get_current_user(token: oauth2_token_scheme ):
     payload = await verify_access_token(token)
     
     user_id = int(payload.get("id"))
-    user = await UserCrud.get_user_by_id(user_id)
+    user = await UserCrud.get_user_by_id(user_id=user_id)
 
     if user is None:
         raise HTTPException(

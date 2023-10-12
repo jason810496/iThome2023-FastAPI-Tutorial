@@ -7,11 +7,10 @@ from models.user import User as UserModel
 from schemas import users as UserSchema
 
 from auth.passwd import get_password_hash
-from database.redis_cahe import crud_cache_decorator
+from database.redis_cahe import  generic_cache_get , user_cache_delete , generic_cache_update
 
 
 @crud_class_decorator
-@crud_cache_decorator
 class UserCrudManager:
 
     async def get_users(self,last:int=0,limit:int=50,keyword:str=None,db_session:AsyncSession=None):
@@ -25,50 +24,56 @@ class UserCrudManager:
         users = result.all()
 
         return users
-
-    async def get_user_infor_by_id(self,user_id:int ,db_session:AsyncSession):
-        stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar).where(UserModel.id == user_id)
+    
+    @generic_cache_get(prefix="user",key="user_id",cls=UserSchema.UserRead)
+    async def get_user_infor_by_id(self,user_id:int ,db_session:AsyncSession) -> UserSchema.UserInfor:
+        stmt = select(UserModel.name,UserModel.id,UserModel.birthday,UserModel.age,UserModel.avatar).where(UserModel.id == user_id)
         user = (await db_session.execute(stmt)).first()
         if user:
-            return user
+            return UserSchema.UserInfor(**user._asdict())
             
         return None
     
-    async def get_user_by_id(self,user_id:int, db_session:AsyncSession=None):
+    @generic_cache_get(prefix="user",key="user_id",cls=UserSchema.UserRead)
+    async def get_user_by_id(self,user_id:int, db_session:AsyncSession=None) -> UserSchema.CurrentUser:
         stmt = select(UserModel.email,UserModel.name,UserModel.id).where(UserModel.id == user_id)
         result = await db_session.execute(stmt)
         user = result.first()
         if user:
-            return user
+            return UserSchema.CurrentUser(**user._asdict())
             
         return None
 
-    async def get_user_id_by_email(self,email:str ,db_session:AsyncSession=None):
+    @generic_cache_get(prefix="user",key="email",cls=UserSchema.UserId)
+    async def get_user_id_by_email(self,email:str ,db_session:AsyncSession=None) -> UserSchema.UserId:
         stmt = select(UserModel.id).where(UserModel.email == email)
         result = await db_session.execute(stmt)
         user = result.first()
         if user:
-            return user
+            return UserSchema.UserId(id=user.id)
             
         return None
 
-    async def get_user_id_by_id(self,user_id:int ,db_session:AsyncSession=None):
+    @generic_cache_get(prefix="user",key="user_id",cls=UserSchema.UserId)
+    async def get_user_id_by_id(self,user_id:int ,db_session:AsyncSession=None) -> UserSchema.UserId:
         stmt = select(UserModel.id).where(UserModel.id == user_id)
         result = await db_session.execute(stmt)
         user = result.first()
         if user:
-            return user
+            return UserSchema.UserId(id=user.id)
             
         return None
     
+    @generic_cache_get(prefix="user",key="email",cls=UserSchema.UserInDB)
     async def get_user_in_db(self,email:str , db_session:AsyncSession=None) -> UserSchema.UserInDB :
         stmt = select(UserModel.id,UserModel.name,UserModel.password).where(UserModel.email == email)
         result = await db_session.execute(stmt)
         user = result.first()
         if user:
-            return user
+            return UserSchema.UserInDB(**user._asdict())
             
         return None
+
 
 
     async def create_user(self,newUser:UserSchema.UserCreate , db_session:AsyncSession=None ):
@@ -86,6 +91,8 @@ class UserCrudManager:
 
         return user
 
+
+    @generic_cache_update(prefix="user",key="user_id")
     async def update_user(self,newUser:UserSchema.UserUpdate , user_id:int , db_session:AsyncSession=None):
         stmt = update(UserModel).where(UserModel.id == user_id).values(
             name=newUser.name,
@@ -99,6 +106,7 @@ class UserCrudManager:
 
         return newUser
     
+    @generic_cache_update(prefix="user",key="user_id")
     async def update_user_password(self,newUser:UserSchema.UserUpdatePassword, user_id:int , db_session:AsyncSession=None):
         stmt = update(UserModel).where(UserModel.id == user_id).values(
             password=get_password_hash(newUser.password)
@@ -109,9 +117,10 @@ class UserCrudManager:
 
         return
     
+    # @user_cache_delete(prefix="user",key="user_id")
     async def delete_user(self,user_id:int, db_session:AsyncSession=None):
         stmt = delete(UserModel).where(UserModel.id == user_id)
         await db_session.execute(stmt)
         await db_session.commit()
 
-        return
+        return 

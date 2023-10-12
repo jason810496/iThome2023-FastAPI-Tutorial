@@ -51,8 +51,10 @@ async def verify_refresh_token(token: str):
     
 
 async def verify_access_token(token: str):
+    print("verify_access_token")
     try:
         payload = jwt.decode(token, settings.access_token_secret)
+        print("payload",payload)
         return payload
     except ExpiredSignatureError:
         raise  HTTPException(
