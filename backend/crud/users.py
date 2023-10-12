@@ -7,12 +7,13 @@ from models.user import User as UserModel
 from schemas import users as UserSchema
 
 from auth.passwd import get_password_hash
-from database.redis_cahe import  generic_cache_get , user_cache_delete , generic_cache_update
+from database.redis_cahe import  generic_cache_get , user_cache_delete , generic_cache_update , generic_pagenation_cache_get
 
 
 @crud_class_decorator
 class UserCrudManager:
 
+    @generic_pagenation_cache_get(prefix="user",key="id",cls=UserSchema.UserRead)
     async def get_users(self,last:int=0,limit:int=50,keyword:str=None,db_session:AsyncSession=None):
         # async with get_db() as db_session:
         stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
@@ -25,7 +26,7 @@ class UserCrudManager:
 
         return users
     
-    @generic_cache_get(prefix="user",key="user_id",cls=UserSchema.UserRead)
+    @generic_cache_get(prefix="user",key="user_id",cls=UserSchema.UserInfor)
     async def get_user_infor_by_id(self,user_id:int ,db_session:AsyncSession) -> UserSchema.UserInfor:
         stmt = select(UserModel.name,UserModel.id,UserModel.birthday,UserModel.age,UserModel.avatar).where(UserModel.id == user_id)
         user = (await db_session.execute(stmt)).first()
@@ -117,7 +118,7 @@ class UserCrudManager:
 
         return
     
-    # @user_cache_delete(prefix="user",key="user_id")
+    @user_cache_delete(prefix="user",key="user_id")
     async def delete_user(self,user_id:int, db_session:AsyncSession=None):
         stmt = delete(UserModel).where(UserModel.id == user_id)
         await db_session.execute(stmt)
