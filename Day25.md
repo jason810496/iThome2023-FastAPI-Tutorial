@@ -1,4 +1,4 @@
-## [[Day25]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day25) 架構優化: Redis Cache , `redis-py` 架構初探
+## [[Day25]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day25) 架構優化 : Redis 實作 Server Cache
 
 > **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day25 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day25)** <br>
 
