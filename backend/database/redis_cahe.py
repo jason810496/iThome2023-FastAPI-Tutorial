@@ -39,9 +39,7 @@ def merge_dict(dict1:dict,dict2:dict):
 
 import ast
 
-
-
-def generic_pagenation_cache_get(prefix:str,key:str,cls:object):
+def generic_pagenation_cache_get(prefix:str,cls:object):
     '''
     pageation cache using redis sorted set
     '''
@@ -61,31 +59,36 @@ def generic_pagenation_cache_get(prefix:str,key:str,cls:object):
             cache_key = f"{prefix}_page"
 
             try:
-                redis_result:list = rc.zrange(name=cache_key,start=left,end=right,withscores=False)
+                redis_result:list = rc.zrange(name=cache_key,start=left,end=right,withscores=False,byscore=False)
                 # print("get redis cache" , prefix , left , right)
                 # print("redis_result" , redis_result)
-                if redis_result:
-                    data = []
+
+                str_result = ""
+                if len(redis_result) > 0:
                     for row_str in redis_result:
-                        # hash_dict = rc.hgetall(row_str)
-                        # if check_has_all_keys(hash_dict,cls):
-                        #     data.append(cls(**hash_dict))
-
                         # print("row_str" , row_str)
-                        row_dict = ast.literal_eval(row_str)
+                        # row_dict = ast.literal_eval(row_str)
                         # print("row_dict" , row_dict)
-                        data.append(cls(**row_dict))
+                        # data.append(cls(**row_dict))
 
-                    return data
+                        # data.append( row_str )
+
+                        str_result += row_str + ","
+
+                
+                    # return data
+
+                return ast.literal_eval(f"[{str_result[:-1]}]")
                 
             except Exception as e:
                 print("redis error")
                 print(e)
                 pass
 
+            
             sql_result = await func(*args, **kwargs)
             if not sql_result:
-                return None
+                return sql_result
             
             # print("set redis cache" , prefix , left , right)
             for row in sql_result:
@@ -105,18 +108,10 @@ def generic_pagenation_cache_get(prefix:str,key:str,cls:object):
 
             # print(last,limit,right)
 
-            return await func(*args, **kwargs)
+            return sql_result
         
         return wrapper
     return inner
-
-def update_pagenation_cache(prefix:str,score:int,upd:dict):
-    rc = redis.Redis(connection_pool=redis_pool)
-    rc.zadd(name=prefix,mapping={ str(upd) :score} , xx=True )
-
-def delete_pagenation_cache(prefix:str,score:int):
-    rc = redis.Redis(connection_pool=redis_pool)
-    rc.zremrangebyscore(name=prefix,min=score,max=score)
 
 
 def generic_cache_get(prefix:str,key:str,cls:object):
@@ -159,7 +154,7 @@ def generic_cache_get(prefix:str,key:str,cls:object):
         return wrapper
     return inner
 
-def generic_cache_update(prefix:str,key:str):
+def generic_cache_update(prefix:str,key:str,update_with_page:bool=False,pagenation_key:str=None):
 
     # redis connection
     rc = redis.Redis(connection_pool=redis_pool)
@@ -179,8 +174,19 @@ def generic_cache_update(prefix:str,key:str):
             sql_dict = sql_query_row_to_dict(sql_result)
             rc.hset(cache_key, mapping=sql_dict) # 1 hour
 
-            page_key = f"{prefix}_page"
-            rc.zadd(name=page_key,mapping={ str( merge_dict(sql_dict, {key:value_key}) ) : value_key}  )
+            # handel update pagenation cache
+            if update_with_page:
+                try:
+                    page_key = f"{prefix}_page"
+                    old_redis_result:str = rc.zrange(name=page_key,start=value_key,end=value_key,withscores=False,byscore=True)[0]
+                    print("old_redis_result" , old_redis_result)
+                    rc.zremrangebyscore(name=page_key,min=value_key,max=value_key)
+                    print("updated:", str( merge_dict( merge_dict( ast.literal_eval(old_redis_result) , sql_dict) , {pagenation_key:value_key} ) ) )
+                    rc.zadd(name=page_key,mapping={ str( merge_dict( merge_dict( ast.literal_eval(old_redis_result) , sql_dict ), {pagenation_key:value_key}) ) : value_key} ,nx=True   )
+                except Exception as e:
+                    print("redis error")
+                    print(e)
+                    pass
             
             return sql_result
         return wrapper
@@ -202,6 +208,12 @@ def generic_cache_delete(prefix:str,key:str):
             except:
                 pass
 
+            try:
+                page_key = f"{prefix}_page"
+                rc.zremrangebyscore(name=page_key,min=value_key,max=value_key)
+            except:
+                pass
+
             return await func(*args, **kwargs)
         return wrapper
     return inner
@@ -220,6 +232,12 @@ def user_cache_delete(prefix:str,key:str):
 
                     rc.delete( f"{prefix}:{redis_dict['email']}"  )
                     rc.delete( cache_key )
+
+                try:
+                    page_key = f"{prefix}_page"
+                    rc.zremrangebyscore(name=page_key,min=redis_dict['id'],max=redis_dict['id'])
+                except:
+                    pass
 
             return await func(*args, **kwargs)
         return wrapper
