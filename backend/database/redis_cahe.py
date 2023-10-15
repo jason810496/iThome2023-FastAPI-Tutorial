@@ -60,24 +60,14 @@ def generic_pagenation_cache_get(prefix:str,cls:object):
 
             try:
                 redis_result:list = rc.zrange(name=cache_key,start=left,end=right,withscores=False,byscore=False)
-                # print("get redis cache" , prefix , left , right)
-                # print("redis_result" , redis_result)
-
                 str_result = ""
+        
                 if len(redis_result) > 0:
-                    for row_str in redis_result:
-                        # print("row_str" , row_str)
-                        # row_dict = ast.literal_eval(row_str)
-                        # print("row_dict" , row_dict)
-                        # data.append(cls(**row_dict))
-
-                        # data.append( row_str )
-
+                    
+                    for row_str in redis_result: # concat user string
                         str_result += row_str + ","
 
-                
-                    # return data
-
+                # convert string to list of dict
                 return ast.literal_eval(f"[{str_result[:-1]}]")
                 
             except Exception as e:
