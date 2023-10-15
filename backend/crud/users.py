@@ -13,7 +13,7 @@ from database.redis_cahe import  generic_cache_get , user_cache_delete , generic
 @crud_class_decorator
 class UserCrudManager:
 
-    @generic_pagenation_cache_get(prefix="user",key="id",cls=UserSchema.UserRead)
+    @generic_pagenation_cache_get(prefix="user",cls=UserSchema.UserRead)
     async def get_users(self,last:int=0,limit:int=50,keyword:str=None,db_session:AsyncSession=None):
         # async with get_db() as db_session:
         stmt = select(UserModel.name,UserModel.id,UserModel.email,UserModel.avatar)
@@ -93,7 +93,7 @@ class UserCrudManager:
         return user
 
 
-    @generic_cache_update(prefix="user",key="user_id")
+    @generic_cache_update(prefix="user",key="user_id",update_with_page=True,pagenation_key="id")
     async def update_user(self,newUser:UserSchema.UserUpdate , user_id:int , db_session:AsyncSession=None):
         stmt = update(UserModel).where(UserModel.id == user_id).values(
             name=newUser.name,

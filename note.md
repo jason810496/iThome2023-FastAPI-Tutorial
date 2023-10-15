@@ -51,3 +51,5 @@ primary / replication architecture :
 - Backend Level 
 [example setup](https://itecnote.com/tecnote/python-read-slave-read-write-master-setup/)
 [flask sqlalchemy example](https://techspot.zzzeek.org/files/2012/sqlalchemy_multiple_dbs.py)
+
+https://stackoverflow.com/questions/67621046/initializing-a-pydantic-dataclass-from-json

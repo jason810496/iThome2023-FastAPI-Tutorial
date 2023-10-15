@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status , Depends
-from typing import List 
+from typing import List
 
 from schemas import users as UserSchema
 from api.depends import check_user_id , pagination_parms
