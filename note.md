@@ -28,6 +28,14 @@ redis :
 database sharding :
 
 
+[postgresql fdw sharding setup](https://about.gitlab.com/handbook/engineering/development/enablement/data_stores/database/doc/fdw-sharding.html)
+
+
+- SQLALchemy :
+    - [horizontal sharding](https://docs.sqlalchemy.org/en/20/orm/extensions/horizontal_shard.html)
+    - [example for shardings](https://docs.sqlalchemy.org/en/20/orm/examples.html#examples-sharding)
+    - [postgresql-partition-and-sqlalchemy](https://stackoverflow.com/questions/61545680/postgresql-partition-and-sqlalchemy)
+
 
 mongo :
 
