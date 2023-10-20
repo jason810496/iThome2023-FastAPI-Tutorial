@@ -1,0 +1,73 @@
+version: '1.0'
+
+services:
+
+  primary:
+    container_name: primary
+    image: postgres:15.1
+    expose:
+      - 5432
+    env_file:
+      - ./primary-replica/db.primary.env
+    restart: always
+    volumes:
+      - ./db_volumes/primary-replica/primary:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "primary_user" , "-d", "primary_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 5
+
+  replica1:
+    container_name: replica1
+    image: postgres:15.1
+    expose:
+      - 5432
+    env_file:
+      - ./primary-replica/db.replica1.env
+    restart: always
+    volumes:
+      - ./db_volumes/primary-replica/replica1:/var/lib/postgresql/data/
+      - ./db_volumes/primary-replica/repl:/var/lib/postgresql/repl
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "replica1_user" , "-d", "replica1_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 5
+
+  replica2:
+    container_name: replica2
+    image: postgres:15.1
+    expose:
+      - 5432
+    env_file:
+      - ./primary-replica/db.replica2.env
+    restart: always
+    volumes:
+      - ./db_volumes/primary-replica/replica2:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "replica2_user" , "-d", "replica2_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build: ./backend
+    # ports:
+    #   - 8000:8003
+    # volumes:
+    #   - ./backend/:/usr/backend/
+    # command: python3 run.py --prod
+
+    restart: always
+    depends_on:
+      primary:
+        condition: service_healthy
+      replica1:
+        condition: service_healthy
+      replica2:
+        condition: service_healthy
+
+networks:
+  default: 
+    name: fastapi_tutorial_primary_replica_network
