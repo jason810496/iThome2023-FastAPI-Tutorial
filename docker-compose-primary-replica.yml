@@ -8,7 +8,7 @@ services:
     expose:
       - 5432
     env_file:
-      - ./primary-replica/db.primary.env
+      - ./primary-replica/db.env
     restart: always
     volumes:
       - ./db_volumes/primary-replica/primary:/var/lib/postgresql/data/
@@ -17,6 +17,9 @@ services:
       interval: 2s
       timeout: 3s
       retries: 5
+    networks:
+      my_network:
+        ipv4_address: 172.22.0.100
 
   replica1:
     container_name: replica1
@@ -24,16 +27,19 @@ services:
     expose:
       - 5432
     env_file:
-      - ./primary-replica/db.replica1.env
+      - ./primary-replica/db.env
     restart: always
     volumes:
       - ./db_volumes/primary-replica/replica1:/var/lib/postgresql/data/
-      - ./db_volumes/primary-replica/repl:/var/lib/postgresql/repl
+      - ./db_volumes/primary-replica/copy1:/var/lib/postgresql/primary_copy
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "replica1_user" , "-d", "replica1_db"]
       interval: 2s
       timeout: 3s
       retries: 5
+    networks:
+      my_network:
+        ipv4_address: 172.22.0.101
 
   replica2:
     container_name: replica2
@@ -41,15 +47,19 @@ services:
     expose:
       - 5432
     env_file:
-      - ./primary-replica/db.replica2.env
+      - ./primary-replica/db.env
     restart: always
     volumes:
       - ./db_volumes/primary-replica/replica2:/var/lib/postgresql/data/
+      - ./db_volumes/primary-replica/copy2:/var/lib/postgresql/primary_copy
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "replica2_user" , "-d", "replica2_db"]
       interval: 2s
       timeout: 3s
       retries: 5
+    networks:
+      my_network:
+        ipv4_address: 172.22.0.102
 
   backend:
     build: ./backend
@@ -69,5 +79,11 @@ services:
         condition: service_healthy
 
 networks:
-  default: 
-    name: fastapi_tutorial_primary_replica_network
+  my_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1
+        # - subnet: "192.168.0.0/24"
+        #   gateway: "192.168.0.1"
