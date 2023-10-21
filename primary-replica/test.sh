@@ -62,4 +62,10 @@ docker exec -it primary bash -c "psql -U $user -d $db -c 'DROP TABLE test;'"
 echo -e "$GREEN List all tables in primary$NC"
 docker exec -it primary bash -c "psql -U $user -d $db -c '\dt'"
 
+echo -e "$GREEN List all tables in replica1$NC"
+docker exec -it replica1 bash -c "psql -U $user -d $db -c '\dt'"
+
+echo -e "$GREEN List all tables in replica2$NC"
+docker exec -it replica2 bash -c "psql -U $user -d $db -c '\dt'"
+
 
