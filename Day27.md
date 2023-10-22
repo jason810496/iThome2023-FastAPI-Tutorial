@@ -1,4 +1,4 @@
-## [[Day26]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day27) FastAPI : Primary Replica 架構實作
+## [[Day27]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day27) FastAPI : Primary Replica 架構實作
 
 > **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day27 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day27)** <br>
 
@@ -70,7 +70,7 @@ networks:
 <br>
 
 完整的 `docker-compose-primary-replica.yml` 在： <br>
-[`/primary-replica/docker-compose-primary-replica.yml`]()
+[`/primary-replica/docker-compose-primary-replica.yml`](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/blob/Day27/docker-compose-primary-replica.yml)
 
 
 ## Primary 設定
@@ -329,7 +329,7 @@ replica2 的設定與 replica1 完全相同 <br>
 
 <br>
 
-這些 script 都在 [`/primary-replica`]() 底下，這邊也不佔篇幅 <br>
+這些 script 都在 [`/primary-replica`](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day27/primary-replica) 底下，這邊也不佔篇幅 <br>
 
 <br>
 
