@@ -31,7 +31,7 @@ services:
     restart: always
     volumes:
       - ./db_volumes/primary-replica/replica1:/var/lib/postgresql/data/
-      - ./db_volumes/primary-replica/copy1:/var/lib/postgresql/primary_copy
+      - ./db_volumes/primary-replica/copy1:/var/lib/postgresql/primary_copy/
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "replica1_user" , "-d", "replica1_db"]
       interval: 2s
@@ -51,7 +51,7 @@ services:
     restart: always
     volumes:
       - ./db_volumes/primary-replica/replica2:/var/lib/postgresql/data/
-      - ./db_volumes/primary-replica/copy2:/var/lib/postgresql/primary_copy
+      - ./db_volumes/primary-replica/copy2:/var/lib/postgresql/primary_copy/
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "replica2_user" , "-d", "replica2_db"]
       interval: 2s
@@ -85,5 +85,3 @@ networks:
       config:
         - subnet: 172.22.0.0/24
           gateway: 172.22.0.1
-        # - subnet: "192.168.0.0/24"
-        #   gateway: "192.168.0.1"
