@@ -15,6 +15,7 @@ if __name__ == "__main__":
     app_mode.add_argument("--prod",action="store_true", help="Run the server in production mode.")
     app_mode.add_argument("--test",action="store_true", help="Run the server in test mode.")
     app_mode.add_argument("--dev",action="store_true", help="Run the server in development mode.")
+    # app_mode.add_argument("--primary_replica",action="store_true", help="Run the server in primary replica architecture.")
 
     # 新增 db_type
     db_type =  parser.add_argument_group(title="Database Type", description="Run the server in different database type.")
@@ -23,6 +24,9 @@ if __name__ == "__main__":
     # 新增 run_mode
     run_mode = parser.add_argument_group(title="Run Mode", description="Run the server in Async or Sync mode. Default is Async.")
     run_mode.add_argument("--sync",action="store_true", help="Run the server in Sync mode.")
+
+    primary_replica = parser.add_argument_group(title="Primary Replica", description="Run the server in Primary Replica architecture.")
+    primary_replica.add_argument("--primary_replica",action="store_true", help="Run the server in Primary Replica architecture.")
     
     args = parser.parse_args()
 
@@ -30,6 +34,8 @@ if __name__ == "__main__":
         load_dotenv("setting/.env.prod")
     elif args.test:
         load_dotenv("setting/.env.test")
+    elif args.primary_replica:
+        load_dotenv("setting/.env.primary-replica")
     else:
         load_dotenv("setting/.env.dev")
 
