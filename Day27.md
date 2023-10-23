@@ -10,21 +10,28 @@
 
 今天我們要來實作 FastAPI + PostgreSQL 的 Primary Replica 架構 <br>
 Primary Replica 架構: <br>
-- 只由 `Primary` 進行寫入資料 ( Create, Update, Delete )
-- `Replica` 進行讀取資料 ( Read )
+- 可以優化**查詢**的效能
+- `Primary` 負責寫入資料和讀取資料 ( Create, Update, Delete, Read )
+- `Replica` 只進行讀取資料 ( Read )
+- `Primary` 會與 `Replica` 自動同步資料
 
 <br>
 
+架構圖如下 : <br>
+
 ```
-  +------------+
-  |  Primary   |
-  | Database   |
-  +------------+
-     /        \      
-+------------+ +------------+ +------------+
-| Replica 1  | | Replica 2  | | Replica .. | ... 
-| Database   | | Database   | |            |
-+------------+ +------------+ +------------+
+  Write  Read
+    |     |
+    |     ├──------------┐
+    |     |              |
+    v     v              v
+  +------------+   +------------+  
+  |   Primary  |   |   Replica  |
+  |  Database  |   |  Database  |
+  +------------+   +------------+
+      |                  ^
+      |                  |
+      └──-- sync data ---┘
 ```
 > 但我們並不需要在後端同步 Primary 與 Replica 的資料 <br>
 > 因為 PostgreSQL 在設定完 Replica 後會自動幫我們同步 <br>
@@ -32,9 +39,10 @@ Primary Replica 架構: <br>
 <br>
 
 今天會將 PostgreSQL 的 Replica 環境設定好 <br>
-會使用 1 個 Primary 與 2 個 Replica <br>
+會使用 1 個 Primary 與 1 個 Replica <br>
 
 > Primary-Replica 環境設定都是參考 [twtrubiks : postgresql note - master slave](https://github.com/twtrubiks/postgresql-note/tree/main/pg-master-slave) <br>
+> 在 PostgreSQL 中 **只有支援 1 個 Replica** <br>
 
 
 ## Docker Compose 設定
@@ -105,9 +113,8 @@ CREATE ROLE repuser WITH LOGIN REPLICATION PASSWORD 'repuser_password';
 ```
 .
 ├── primary
-├── primary_copy
-├── replica1
-└── replica2
+├── copy
+└── replica
 
 4 directories, 0 files
 ```
@@ -180,57 +187,57 @@ INSERT INTO test_table (name) VALUES ('test1');
 
 記得要 **restart** Primary 的 Container 來重新載入設定 ！ <br>
 
-## Replica1 設定 
+## Replica 設定 
 
 ### 以 `pg_basebackup` 複製 Primary 的資料
 
-進入 `replica1` 的 Container <br>
+進入 `replica` 的 Container <br>
 ```bash
-docker exec -it replica1 bash
+docker exec -it replica bash
 ```
 
 <br>
 
-在 `replica1` 底下執行以下指令 <br>
+在 `replica` 底下執行以下指令 <br>
 ```bash
-pg_basebackup -R -D /var/lib/postgresql/primary_copy -Fp -Xs -v -P -h primary -p 5432 -U repuser
+pg_basebackup -R -D /var/lib/postgresql/copy -Fp -Xs -v -P -h primary -p 5432 -U repuser
 ```
 
 ![pg_basebackup](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day27/pg_basebackup.png) <br>
 
 ### 載入 Primary 的資料
 
-先 **stop** Primary 和 Replica1 的 Container <br>
+先 **stop** Primary 和 replica 的 Container <br>
 ```bash
-docker stop primary replica1
+docker stop primary replica
 ```
 
 <br>
 
-將 `primary_copy` 資料夾複製到 `replica1` 的 `data` 資料夾 <br>
+將 `copy` 資料夾複製到 `replica` 的 `data` 資料夾 <br>
 ```bash
-rm -r db_volumes/primary-replica/replica1/*
-cp -r db_volumes/primary-replica/copy1/* db_volumes/primary-replica/replica1/
+rm -r db_volumes/primary-replica/replica/*
+cp -r db_volumes/primary-replica/copy/* db_volumes/primary-replica/replica/
 ```
 
-再 **restart** Primary 和 Replica1 的 Container <br>
+再 **restart** Primary 和 Replica 的 Container <br>
 ```bash
 docker compose -f docker-compose-primary-replica.yml restart
 ```
 
-### 測試 Primary 與 Replica1 是否同步運作
+### 測試 Primary 與 Replica 是否同步運作
 
 
-先進入 `Repelica1` 的 Container <br>
+先進入 Replica 的 Container <br>
 ```bash
-docker exec -it primary replica1
+docker exec -it primary replica
 ```
 
 <br>
 
 並嘗試進入 PostgreSQL <br>
 ```bash
-psql -U replica1_user -d replica1_db
+psql -U replica_user -d replica_db
 ```
 
 會發現跳出 Error : <br>
@@ -238,7 +245,7 @@ psql -U replica1_user -d replica1_db
 
 <br>
 
-嘗試在 `Replica1` Contaier 以 `primary_user` 進入 PostgreSQL <br>
+嘗試在 `Replica` Contaier 以 `primary_user` 進入 PostgreSQL <br>
 
 ![docker replica1 primary_user](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day27/docker-replica1-primary_user.png) <br>
 
@@ -250,7 +257,7 @@ psql -U replica1_user -d replica1_db
 
 
 
-### 測試 Primary 與 Replica1 是否同步運作
+### 測試 Primary 與 Replica 是否同步運作
 
 <br>
 
@@ -277,9 +284,9 @@ INSERT INTO test2_table (name) VALUES ('test2');
 
 <br>
 
-再進入 Replica1 的 PostgreSQL <br>
+再進入 Replica 的 PostgreSQL <br>
 ```bash
-docker exec -it replica1 bash
+docker exec -it replica bash
 ```
 
 <br>
@@ -294,7 +301,7 @@ psql -U primary_user -d primary_db
 
 ![docker replica1 test2_table](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day27/docker-replica1-test2_table.png) <br>
 
-可以看到 `test2_table` 已經被同步到 Replica1 的 PostgreSQL 中 ! <br>
+可以看到 `test2_table` 已經被同步到 Replica 的 PostgreSQL 中 ! <br>
 
 ## 修改設定
 
@@ -315,10 +322,10 @@ POSTGRES_DB=postgresql_db
 
 這樣就可以避免不同的 User 造成的問題 <br>
 
-## Replica2 設定
+# 自動化設定
 
-replica2 的設定與 replica1 完全相同 <br>
-所以我們其實可以寫 shell script 來自動化設定 <br>
+以上的設定都是手動設定的 <br>
+但我們可以透過 shell script 來自動化設定 <br>
 
 <br>
 
