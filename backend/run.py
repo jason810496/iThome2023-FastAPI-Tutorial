@@ -30,6 +30,8 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
+    print("args",args)
+
     if args.prod:
         load_dotenv("setting/.env.prod")
     elif args.test:
@@ -48,6 +50,7 @@ if __name__ == "__main__":
     # 新增 DB_TYPE
     os.environ["DB_TYPE"] = args.db
     print("DB_TYPE",os.getenv("DB_TYPE"))
+    print("OS_ENVIRON",os.environ)
 
     uvicorn.run("main:app", host="0.0.0.0" , port=int(os.getenv("PORT")) , reload=bool(os.getenv("RELOAD")) )
     
