@@ -402,4 +402,4 @@ async def get_read_db():
 - [twtrubiks : postgresql note - master slave](https://github.com/twtrubiks/postgresql-note/tree/main/pg-master-slave)
 - [System design paradigm: Primary-replica pattern](https://luanjunyi.medium.com/system-design-paradigm-primary-replica-pattern-dc621bf195f1)
 - [postgresql replication](https://editor.leonh.space/2023/postgresql-replication/)
-- [mysql : master slave](hhttps://medium.com/dean-lin/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%B6%E4%BD%A0%E5%AF%A6%E4%BD%9C-mysql-master-slave-replication-16d0a0fa1d04)
+- [mysql : master slave](https://medium.com/dean-lin/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%B6%E4%BD%A0%E5%AF%A6%E4%BD%9C-mysql-master-slave-replication-16d0a0fa1d04)
