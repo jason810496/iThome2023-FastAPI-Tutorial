@@ -1,5 +1,3 @@
-from random import choice
-
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine , async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase 
@@ -30,26 +28,21 @@ replica_engine = create_async_engine(
 
 primarySession = async_sessionmaker(primary_engine, expire_on_commit=False, autocommit=False)
 replicaSession = async_sessionmaker(replica_engine, expire_on_commit=False, autocommit=False)
-# readSessions = [primarySession,replicaSession]
-# indexies = [0,1]
+readSessions = [primarySession,replicaSession]
 
-# idx = 0
 flag = True
-
-GET = "get"
 
 class Base(DeclarativeBase):
     pass
 
 @asynccontextmanager
-async def get_primary_db():
+async def get_write_db():
     async with primarySession() as db:
         async with db.begin():
             yield db
 
 @asynccontextmanager
 async def get_read_db():
-
     flag = not flag  # toggle flag
 
     if flag:
@@ -57,10 +50,9 @@ async def get_read_db():
             async with db.begin():
                 yield db
 
-    else:
-        async with replicaSession() as db:
-            async with db.begin():
-                yield db
+    async with replicaSession() as db:
+        async with db.begin():
+            yield db
 
 async def init_db():
     async with primarySession() as db:
@@ -83,13 +75,13 @@ def db_session_decorator(func):
     async def wrapper(*args, **kwargs):
 
         # if GET in func.__name__: # original 
-        if func.__name__[0] == 'g': # get
+        if func.__name__[0] == 'g': # optimized speed 
             async with get_read_db() as db_session:
                 kwargs["db_session"] = db_session
                 result = await func(*args, **kwargs)
                 return result
 
-        async with get_primary_db() as db_session:
+        async with get_write_db() as db_session:
             kwargs["db_session"] = db_session
             result = await func(*args, **kwargs)
             return result
