@@ -2,3 +2,5 @@ __pycache__
 .pytest_cache
 Dockerfile
 .dockignore
+sync
+tests
