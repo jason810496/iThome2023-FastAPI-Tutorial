@@ -21,6 +21,18 @@ class Settings():
 
     refresh_token_secret:str = os.getenv("REFRESH_TOKEN_SECRET")
     refresh_token_expire_minutes:int = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES"))
+
+
+class PrimaryReplicaSetting():
+    primary_database_url: str = os.getenv("ASYNC_PRIMARY_DATABASE_URL")
+    replica_database_url: str = os.getenv("ASYNC_REPLICA_DATABASE_URL")
+    redis_url:str = os.getenv("REDIS_URL") 
+
+    access_token_secret:str = os.getenv("ACCESS_TOKEN_SECRET")
+    access_token_expire_minutes:int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
+    refresh_token_secret:str = os.getenv("REFRESH_TOKEN_SECRET")
+    refresh_token_expire_minutes:int = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES"))
     
 
 
@@ -28,3 +40,9 @@ class Settings():
 def get_settings():
     load_dotenv( f".env.{os.getenv('APP_MODE')}")
     return Settings()
+
+
+@lru_cache()
+def get_primary_replica_settings():
+    load_dotenv( f".env.{os.getenv('APP_MODE')}")
+    return PrimaryReplicaSetting()

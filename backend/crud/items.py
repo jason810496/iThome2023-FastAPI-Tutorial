@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select , update , delete
 
-from database.generic import crud_class_decorator
+from database.primary_replica import crud_class_decorator
 from models.item import Item as ItemModel 
 from schemas import items as ItemSchema
 

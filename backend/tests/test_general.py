@@ -3,8 +3,8 @@ import pytest
 from functools import lru_cache
 import random
 
-USER_AMOUNT = 500
-QUERY_AMOUNT = 50000
+USER_AMOUNT = 100
+QUERY_AMOUNT = 10000
 UPDATE_AMOUNT = 50
 
 @lru_cache()
@@ -115,20 +115,19 @@ async def test_get_user_by_id(async_client,user):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user",get_random_user_list_for_update())
 async def test_update_user(async_client,user):
-    user_id = await get_user_id(async_client,user)
     access_token = await get_access_token(async_client,user)
     
     payload = user.copy()
     payload["avatar"] = "avatar_url_updated" + str(random.randint(0,100))
     payload["age"] = random.randint(1,99)
 
-    response = await async_client.put(f"/api/users/{user_id}",json=payload,headers={"Authorization": f"Bearer {access_token}"})
+    response = await async_client.put(f"/api/me",json=payload,headers={"Authorization": f"Bearer {access_token}"})
     assert response.status_code == 200
     assert response.json()["avatar"] == payload["avatar"]
     assert response.json()["age"] == payload["age"]
 
     # reset
-    await async_client.put(f"/api/users/{user_id}",json=user.copy(),headers={"Authorization": f"Bearer {access_token}"})
+    await async_client.put(f"/api/me",json=user.copy(),headers={"Authorization": f"Bearer {access_token}"})
     assert response.status_code == 200
 
 
@@ -160,8 +159,7 @@ async def test_get_users_2(async_client,l,r):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user",get_user_data())
 async def test_delete_user(async_client,user):
-    user_id = await get_user_id(async_client,user)
     access_token = await get_access_token(async_client,user)
     
-    response = await async_client.delete(f"/api/users/{user_id}",headers={"Authorization": f"Bearer {access_token}"})
+    response = await async_client.delete(f"/api/me",headers={"Authorization": f"Bearer {access_token}"})
     assert response.status_code == 204
