@@ -5,8 +5,6 @@ from schemas import users as UserSchema
 from api.depends import check_user_id , pagination_parms
 from crud.users import UserCrudManager
 
-from auth.passwd import get_password_hash
-from auth.jwt import verify_access_token
 from auth.utils import get_current_user
 
 
@@ -62,7 +60,7 @@ async def create_user(newUser: UserSchema.UserCreate ):
     user = await UserCrud.create_user(newUser=newUser)
     return vars(user)
 
-@router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse )
+@router.put("/users/{user_id}" , response_model=UserSchema.UserUpdateResponse , deprecated=True)
 async def update_user(
     newUser: UserSchema.UserUpdate,
     user_id:int=Depends(check_user_id),
@@ -74,7 +72,7 @@ async def update_user(
     await UserCrud.update_user(newUser=newUser,user_id=user_id)
     return newUser
 
-@router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/users/{user_id}/password", status_code=status.HTTP_204_NO_CONTENT , deprecated=True)
 async def update_user_password(
     newUser:UserSchema.UserUpdatePassword,
     user_id:int=Depends(check_user_id),
@@ -88,11 +86,11 @@ async def update_user_password(
 
 
 
-@router.post("/userCreate" , deprecated=True )
+@router.post("/userCreate" , deprecated=True)
 async def create_user_deprecated(newUser: UserSchema.UserCreate ):
     return "deprecated"
 
-@router.delete("/users/{user_id}",status_code=status.HTTP_204_NO_CONTENT )
+@router.delete("/users/{user_id}",status_code=status.HTTP_204_NO_CONTENT , deprecated=True)
 async def delete_users(
     user_id:int = Depends(check_user_id),
     user:UserSchema.CurrentUser = Depends(get_current_user) ):
