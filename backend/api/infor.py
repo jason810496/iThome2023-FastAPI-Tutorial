@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlalchemy import text
 
 from setting.config import get_settings
-from database.generic import get_db
+from database.primary_replica import get_write_db as get_db
 from models.user import User
 from models.item import Item
 

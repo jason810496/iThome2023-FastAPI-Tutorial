@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select 
 
 from models.user import User as UserModel
-from database.generic import get_db
 from crud.users import UserCrudManager
 from crud.items import ItemCrudManager
 
