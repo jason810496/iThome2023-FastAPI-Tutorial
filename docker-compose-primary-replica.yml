@@ -47,14 +47,16 @@ services:
       - 8000:8003
     volumes:
       - ./backend/:/usr/backend/
-    command: python3 run.py --prod
-
+    command: python3 run.py --primary_replica
     restart: always
     depends_on:
       primary:
         condition: service_healthy
       replica:
         condition: service_healthy
+    networks:
+      my_network:
+          ipv4_address: 172.22.0.200
 
 networks:
   my_network:
