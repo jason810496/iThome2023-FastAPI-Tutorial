@@ -1,21 +1,18 @@
 from contextlib import asynccontextmanager
-from sqlalchemy.ext.asyncio import create_async_engine , async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase 
 from sqlalchemy.schema import CreateTable
-
-from setting.config import get_primary_replica_settings
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from setting.config import get_settings
 from models.user import User
 from models.item import Item
 
-
-settings = get_primary_replica_settings()
+settings = get_settings()
 
 primary_engine = create_async_engine(
     settings.primary_database_url,
     echo=True,
     pool_pre_ping=True,
     pool_size=8, max_overflow=0,
-    
 )
 
 replica_engine = create_async_engine(
