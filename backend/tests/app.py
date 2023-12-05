@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 
 # from setting.config import get_settings
-from setting.config import get_primary_replica_settings as get_settings
+from setting.config import get_settings
 
 settings = get_settings()
 
@@ -14,7 +14,7 @@ from api.items import router as item_router
 from api.auth import router as auth_router
 from api.me import router as me_router
 # from database.generic import init_db , close_db
-from database.primary_replica import init_db , close_db
+from database.injection import init_db , close_db
 
 app.include_router(auth_router)
 app.include_router(user_router)

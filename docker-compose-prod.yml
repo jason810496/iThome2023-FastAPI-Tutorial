@@ -35,8 +35,6 @@ services:
     image: redis:7.2.1
     expose:
       - 6379
-    env_file:
-      - db.redis.env
     restart: always
     volumes:
       - ./db_volumes/redis:/data/
@@ -50,11 +48,11 @@ services:
     build: ./backend
     ports:
       - 8000:8003
-    volumes:
-      - ./backend/:/usr/backend/
-    command: python3 run.py --dev
+    # volumes:
+    #   - ./backend/:/usr/backend/
+    command: python3 run.py --prod
     env_file:
-      - ./backend/.env/.dev.env
+      - ./backend/.env/.prod.env
     restart: always
     depends_on:
       redis_db:

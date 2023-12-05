@@ -1,12 +1,8 @@
-import redis
 from setting.config import get_settings
+import redis
+
 
 settings = get_settings()
-
-
-redis_pool = redis.ConnectionPool.from_url(settings.redis_url,decode_responses=True)
-
-from sqlalchemy.engine.row import Row
 
 
 def check_has_all_keys(result:dict,cls:object):
@@ -40,9 +36,16 @@ def merge_dict(dict1:dict,dict2:dict):
 import ast
 
 def generic_pagenation_cache_get(prefix:str,cls:object):
+    if settings.redis_url == None:
+        def inner(func):
+            async def wrapper(*args, **kwargs):
+                return await func(*args, **kwargs)
+            return wrapper
+        return inner
     '''
     pageation cache using redis sorted set
     '''
+    from .redis_pool import redis_pool
     rc = redis.Redis(connection_pool=redis_pool)
 
     def inner(func):
@@ -67,8 +70,8 @@ def generic_pagenation_cache_get(prefix:str,cls:object):
                     for row_str in redis_result: # concat user string
                         str_result += row_str + ","
 
-                # convert string to list of dict
-                return ast.literal_eval(f"[{str_result[:-1]}]")
+                    # convert string to list of dict
+                    return ast.literal_eval(f"[{str_result[:-1]}]")
                 
             except Exception as e:
                 print("redis error")
@@ -97,7 +100,7 @@ def generic_pagenation_cache_get(prefix:str,cls:object):
 
 
             # print(last,limit,right)
-
+            print("sql_result" , sql_result)
             return sql_result
         
         return wrapper
@@ -105,12 +108,18 @@ def generic_pagenation_cache_get(prefix:str,cls:object):
 
 
 def generic_cache_get(prefix:str,key:str,cls:object):
+    if settings.redis_url == None:
+        def inner(func):
+            async def wrapper(*args, **kwargs):
+                return await func(*args, **kwargs)
+            return wrapper
+        return inner
     '''
     prefix: namspace for redis key ( such as `user` 、`item` 、`article` )
     key: **parameter name** in caller function ( such as `user_id` 、`email` 、`item_id` )
     cls: **response schema** in caller function ( such as `UserSchema.UserRead` 、`UserSchema.UserId` 、`ItemSchema.ItemRead` )
     '''
-
+    from .redis_pool import redis_pool
     rc = redis.Redis(connection_pool=redis_pool)
 
     def inner(func):
@@ -145,8 +154,14 @@ def generic_cache_get(prefix:str,key:str,cls:object):
     return inner
 
 def generic_cache_update(prefix:str,key:str,update_with_page:bool=False,pagenation_key:str=None):
-
+    if settings.redis_url == None:
+        def inner(func):
+            async def wrapper(*args, **kwargs):
+                return await func(*args, **kwargs)
+            return wrapper
+        return inner
     # redis connection
+    from .redis_pool import redis_pool
     rc = redis.Redis(connection_pool=redis_pool)
 
     def inner(func):
@@ -183,6 +198,14 @@ def generic_cache_update(prefix:str,key:str,update_with_page:bool=False,pagenati
     return inner
 
 def generic_cache_delete(prefix:str,key:str):
+    if settings.redis_url == None:
+        def inner(func):
+            async def wrapper(*args, **kwargs):
+                return await func(*args, **kwargs)
+            return wrapper
+        return inner
+    
+    from .redis_pool import redis_pool
     rc = redis.Redis(connection_pool=redis_pool)
 
     def inner(func):
@@ -209,7 +232,14 @@ def generic_cache_delete(prefix:str,key:str):
     return inner
 
 def user_cache_delete(prefix:str,key:str):
+    if settings.redis_url == None:
+        def inner(func):
+            async def wrapper(*args, **kwargs):
+                return await func(*args, **kwargs)
+            return wrapper
+        return inner
 
+    from .redis_pool import redis_pool
     rc = redis.Redis(connection_pool=redis_pool)
 
     def inner(func):

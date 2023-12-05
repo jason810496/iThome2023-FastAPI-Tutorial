@@ -15,7 +15,6 @@ if __name__ == "__main__":
     app_mode.add_argument("--prod",action="store_true", help="Run the server in production mode.")
     app_mode.add_argument("--test",action="store_true", help="Run the server in test mode.")
     app_mode.add_argument("--dev",action="store_true", help="Run the server in development mode.")
-    # app_mode.add_argument("--primary_replica",action="store_true", help="Run the server in primary replica architecture.")
 
     # 新增 db_type
     db_type =  parser.add_argument_group(title="Database Type", description="Run the server in different database type.")
@@ -33,24 +32,15 @@ if __name__ == "__main__":
     print("args",args)
 
     if args.prod:
-        load_dotenv("setting/.env.prod")
+        pass
     elif args.test:
-        load_dotenv("setting/.env.test")
+        load_dotenv(".env/.test.env")
     elif args.primary_replica:
-        load_dotenv("setting/.env.primary-replica")
+        load_dotenv(".env/.primary-replica.env")
     else:
-        load_dotenv("setting/.env.dev")
+        load_dotenv(".env/.dev.env")
 
-
-    if args.sync:
-        os.environ["RUN_MODE"] = "SYNC"
-    else:
-        os.environ["RUN_MODE"] = "ASYNC"
-
-    # 新增 DB_TYPE
     os.environ["DB_TYPE"] = args.db
-    print("DB_TYPE",os.getenv("DB_TYPE"))
-    print("OS_ENVIRON",os.environ)
 
     uvicorn.run("main:app", host="0.0.0.0" , port=int(os.getenv("PORT")) , reload=bool(os.getenv("RELOAD")) )
     
