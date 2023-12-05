@@ -48,6 +48,8 @@ services:
     volumes:
       - ./backend/:/usr/backend/
     command: python3 run.py --primary_replica
+    env_file:
+      - ./backend/.env/.primary-replica.env
     restart: always
     depends_on:
       primary:
