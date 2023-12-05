@@ -4,3 +4,4 @@ Dockerfile
 .dockignore
 sync
 tests
+.env
