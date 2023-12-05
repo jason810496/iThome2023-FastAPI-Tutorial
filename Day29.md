@@ -1,13 +1,6 @@
 ## [[Day29]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day29) FastAPI : Refactoring & CROS 
 
 > **本次的程式碼與目錄結構可以參考 [FastAPI Tutorial : Day29 branch](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day29)** <br>
-## Reference 
-
-- [twtrubiks : postgresql master slave video tutorial](https://www.youtube.com/watch?v=zxxzcpvCa6o&ab_channel=%E6%B2%88%E5%BC%98%E5%93%B2)
-- [twtrubiks : postgresql note - master slave](https://github.com/twtrubiks/postgresql-note/tree/main/pg-master-slave)
-- [System design paradigm: Primary-replica pattern](https://luanjunyi.medium.com/system-design-paradigm-primary-replica-pattern-dc621bf195f1)
-- [postgresql replication](https://editor.leonh.space/2023/postgresql-replication/)
-- [mysql : master slave](https://medium.com/dean-lin/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%B8%B6%E4%BD%A0%E5%AF%A6%E4%BD%9C-mysql-master-slave-replication-16d0a0fa1d04)
 
 ## 前言
 
@@ -247,7 +240,7 @@ async def root():
     '''
 ```
 
-![frontend]()
+![frontend](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day29/frontend.png)
 
 這邊我們在 frontend 中加上一個 input 和 button <br>
 當我們輸入 backend 的 route 後並按下 button 後 <br>
@@ -259,7 +252,7 @@ async def root():
 
 <br>
 
-![run fontend backend]()
+![run fontend backend](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day29/run-frontend-backend.png)
 
 ### 不加入 origins
 
@@ -267,7 +260,7 @@ async def root():
 
 <br>
 
-![cors error]()
+![cors error](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day29/cors-error.png)
 
 而我們在 frontend 中輸入 `/api/users` 後 <br>
 可以看到 CORS 的錯誤訊息 <br>
@@ -278,7 +271,7 @@ async def root():
 
 <br>
 
-![cors success]()
+![cors success](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day29/cors-success.png)
 
 這樣就可以正常的 fetch backend 的 API 了 <br>
 
