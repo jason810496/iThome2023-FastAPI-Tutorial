@@ -55,7 +55,7 @@ Welcome to have any discussion with me about this tutorial 🙌<br>
 - [[Day30] FastAPI 系列：山重水複疑無路，柳暗花明又一村](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day30)
 
 **在 Day31 ~ Day33 : Event Drive 與 Rate Limit 實作** <br>
-- [[Day31]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31) : Event Driven 初探(1) 以 Redis 作為 Message Queue
-- [[Day32]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32) : Event Driven 初探(2) 以 Celery + Redis 作為可監控式 Message Broker
-- [[Day33]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day33) 以 Redis 實作 Rate Limit Middleware
+- [[Day31 : Event Driven 初探(1) 以 Redis 作為 Message Queue]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31)
+- [[Day32 : Event Driven 初探(2) 以 Celery + Redis 作為可監控式 Message Broker]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32)
+- [[Day33 : 以 Redis 實作 Rate Limit Middleware]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day33)
     
