@@ -1,9 +1,16 @@
-# [Day01]  FastAPI 推坑與框架的朋友們
+## [[Day30]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day30) FastAPI 系列：山重水複疑無路，柳暗花明又一村
 
-## 本系列文章目錄
 
-在 30 天的鐵人賽，我們會完成了以下的內容 <br>
+## 來不及在 iThome 鐵人賽關版前寫完的文章
 
+都會放放在 [Github Repo](https://github.com/jason810496/iThome2023-FastAPI-Tutorial) 上，有興趣的可以自行閱讀 ! <br>
+- [[Day31]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31) : Event Driven 初探(1) 以 Redis 作為 Message Queue
+- [[Day32]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32) : Event Driven 初探(2) 以 Celery + Redis 作為可監控式 Message Broker
+- [[Day33]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32) 以 Redis 實作 Rate Limit Middleware
+
+## 回顧
+
+在 30 天的鐵人賽，我們完成了以下的內容 <br>
 ### 基礎功能
 - FastAPI 基本用法 : 以 FastAPI 來實作基本 RESTful API
 - Databse Injections : 以 SQLAlchemy 作為 ORM 來操作資料庫
@@ -16,6 +23,8 @@
 - 實作 Primary Replica 架構 : 以 Read-Write Splitting 和 Read-Only Replica 來提升 Query 效能
 - 實作 Event Driven 架構 : 以 Celery + Redis 作為 Message Broker 來實作非同步任務
 - 實作 Rate Limit Middleware : 以 Redis 作為 Rate Limit 的資料儲存
+
+<br>
 
 **在 Day01 ~ Day09 : 介紹 FastAPI 的基本用法** <br>
 - [[Day01]  FastAPI 推坑與框架的朋友們](https://ithelp.ithome.com.tw/articles/10320028)
@@ -66,114 +75,54 @@
 - [[Day32]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32) : Event Driven 初探(2) 以 Celery + Redis 作為可監控式 Message Broker
 - [[Day33]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day33) 以 Redis 實作 Rate Limit Middleware
 
+
+## 總結 
+
+原本是 10/16 就會結束的鐵人賽 <br>
+其實到今天 ( 12/06 ) 才正式寫完 TAT <br>
+
 <br>
 
-希望這些內容可以幫助到大家! <br>
-也歡迎大家提出建議和指教 🙌
+在開賽前，我其實只有囤不到 10 篇的文章 <br>
+接下來都是盡可能一天生一篇 <br>
+> 但是每篇包含 code 大概都落在 3000~5000 字 <br>
+> 還有在新功能實作時，多少會遇到一些 bugs <br>
+> 後期的文章都只能拿以前的文章先貼上去 <br>
 
----
-> 以下是 Day1 正文！
+<br>
 
-FastAPI 是由 ：
-- [Starlette](https://www.starlette.io/)
-- [Pydantic](https://docs.pydantic.dev/latest/)
+還有在最後 5 篇文章時，想不太到也寫什麼 ( 之前規劃的內容都寫完了 ) <br>
+也花了快一兩週來看其他文章、學新技術、找主題 <br>
 
-這兩個框架作為基礎搭建的
+<br>
 
-## FastAPI 優點
+在實作也遇到蠻多出乎意料的問題 <br>
+- 在處理 async genrator 時：發現需要透過 `asynccontextmanager` 才能正確的 yield 出 `AsyncSession`
+- 以 Redis 實作 Pagenaion Cache 時：發現後端再處理資料合併時效率太低，用其他寫法才達到預期的效果
+- 實作 Primary Replica 架構時：發現以 `random.choice` 來選擇 Replica 會倒致效率低落，改用以 bitwise 實現 `round-robin` 才達到預期的效果
 
-### 速度快
-#### django / flask / FastAPI 大比拼
+<br>
 
-- 在 [web framework benchmark](https://web-frameworks-benchmark.netlify.app/result?asc=0&f=fastapi,django,flask&metric=percentile50&order_by=level64) 中查詢這三個框架的比較，可見 FastAPI 比 django / flask 快上約 5 ~ 10 倍
-    - 在 Request / Second 的圖表：
-        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/comparison-req-sec.png)
-    - 在 Average Latency 的圖表：
-        ![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/comparison-avg.png)
-
-### 內建支援 async function
-
-並且 FastAPI 支援 `async` function
-```python
-@app.get("/async")
-async def async_hello_world():
-    return "Hello World"
-
-@app.get("/sync")
-def sync_hello_world():
-    return "Hello World"
-```
+像是在處理 Pagenaion Cache 和 Primary Replica 架構問題時 <br>
+都分別花 3 天到 1 週才通靈出關鍵點 <br>
 
 
-### 內建支援 OpenAPI (Swagger) 規範
-跑起 FastAPI 後，可以在 `http://localhost:port/docs` 看到 Swagger UI <br>
-在開發初期測試時非常方便！
+<br>
 
-![](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day01/swagger-ui.png)
-
-### 內建型別檢查
-
-**如果喜歡 `TypeScript` 那一定也會喜歡 `FastAPI`**
-
-在 
-- API endpoint 的輸入參數或輸出參數
-- endpoint 與 CRUD 之間的傳遞
-
-都可以透過 `Schema` 作為型別檢查的基礎 <br>
-而 `Schema` 就是由 `Pydantic` 所提供的 `BaseModel`  繼承而來<br>
-如下面的例子：
-```python
-from datetime import datetime
-from pydantic import BaseModel
-
-class UserBase(BaseModel):
-    id: int
-    name: str
-    country: str
-    age: int
-
-class UserCreate(UserBase):
-    address: str
-    birthday: datetime
-    password: str
-
-class UserPubic(UserBase):
-    pass
-
-class UserPricate(UserBase):
-    address: str
-    birthday: datetime
-    password: str
-
-```
-
-讓我們在寫 `FastAPI` 時，會有寫 `TypeScript` 的既視感
-> FastAPI 之於 其他 python 後端框架架，就像 typescript 之於 javascript (單指的是語法層面)
+在這兩個月的時間 <br>
+除了正式完成 iThome 鐵人賽 <br>
+也在 10 月打 [**NCPC 決賽**](https://ncpc.ntnu.edu.tw/)、[**ICPC 桃園站**](https://icpc.global/regionals/finder/Taipei) 和 [**ITSA 決賽**](https://www.itsa.org.tw/itsacontest/2023/register/index.php) <br>
+11 月 在 [**MOPCON 講議程**](https://mopcon.org/2023/schedule/)、參加 [**臺北程式節黑客松**](https://codefest.taipei/) 和 **聽 Coldplay演唱會** <br>
+是個非常充實的兩個月！<br>
 
 
-## Summary
+## About Me
+
+我是劉哲佑 <br>
+目前就讀成大資工大二 <br>
+目前往 Fullstack 偏 Backend + DevOps 的方向發展 ! <br>
 
 
-FastAPI 的優點：
-- 速度快
-    - 比 django / flask 快上約 5 ~ 10 倍
-    - 支援 async / await
-- 內建支援 OpenAPI (Swagger) 規範
-    - 在開發初期測試時非常方便！
-- 內建型別檢查
-    - 有 `TypeScript` 的感覺
-- 容易測試
-    - 有提供 `TestClient` ，並可以透過 `pytest` 進行測試
-- 豐富文件與社群
-    - [FastAPI document](https://fastapi.tiangolo.com/) 提供許多教學與範例
-    - 也有許多人整合 FastAPI 與其他套件，例如：
-        - [FastAPI-users](https://github.com/fastapi-users/fastapi-users)
-        - [FastAPI-redis-cache](https://github.com/a-luna/fastapi-redis-cache)
-        - [FastAPI-auth](https://github.com/dmontagu/fastapi-auth)
-        - [FastAPI-security](https://github.com/jacobsvante/fastapi-security)
-
-##### reference
-
-- [FastAPI document](https://fastapi.tiangolo.com/)
-- [web-frameworks-benchmark](https://web-frameworks-benchmark.netlify.app/result?asc=0&f=fastapi,django,flask&metric=totalRequestsPerS&order_by=level64)
-- [fastapi-the-good-the-bad-and-the-ugly](https://dev.to/fuadrafid/fastapi-the-good-the-bad-and-the-ugly-20ob)
+[![Facebook](https://img.shields.io/static/v1?style=for-the-badge&message=Facebook&color=1877F2&logo=Facebook&logoColor=FFFFFF&label=)](https://www.facebook.com/JasonBigCow)
+[![LinkedIn](https://img.shields.io/static/v1?style=for-the-badge&message=LinkedIn&color=0A66C2&logo=LinkedIn&logoColor=FFFFFF&label=)](https://www.linkedin.com/in/zhe-you-liu/)
+[![Gmail](https://img.shields.io/static/v1?style=for-the-badge&message=Gmail&color=EA4335&logo=Gmail&logoColor=FFFFFF&label=)](mailto:f74116720@gs.ncku.edu.tw)
