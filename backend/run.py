@@ -15,6 +15,7 @@ if __name__ == "__main__":
     app_mode.add_argument("--prod",action="store_true", help="Run the server in production mode.")
     app_mode.add_argument("--test",action="store_true", help="Run the server in test mode.")
     app_mode.add_argument("--dev",action="store_true", help="Run the server in development mode.")
+    app_mode.add_argument("--mq",action="store_true", help="Run the server in message queue mode.")
 
     # 新增 db_type
     db_type =  parser.add_argument_group(title="Database Type", description="Run the server in different database type.")
@@ -31,6 +32,11 @@ if __name__ == "__main__":
 
     print("args",args)
 
+    if args.mq:
+        load_dotenv(".env/.mq.env")
+        uvicorn.run("main:mq_app", host="0.0.0.0" , port=int(os.getenv("PORT")) , reload=bool(os.getenv("RELOAD")) )
+        exit()
+
     if args.prod:
         pass
     elif args.test:
@@ -41,6 +47,5 @@ if __name__ == "__main__":
         load_dotenv(".env/.dev.env")
 
     os.environ["DB_TYPE"] = args.db
-
     uvicorn.run("main:app", host="0.0.0.0" , port=int(os.getenv("PORT")) , reload=bool(os.getenv("RELOAD")) )
     

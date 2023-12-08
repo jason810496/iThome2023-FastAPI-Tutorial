@@ -1,23 +1,12 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI , Request
 from fastapi.middleware.cors import CORSMiddleware
-import sentry_sdk
+import time
+import logging
 
 from setting.config import get_settings
 
 settings = get_settings()
 
-
-if settings.sentry_dsn:
-    sentry_sdk.init(
-    dsn=settings.sentry_dsn,
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
-    profiles_sample_rate=1.0,
-)
 
 origins = [
     "http://localhost:8001",
@@ -91,7 +80,39 @@ def create_sync_app():
 
     return app
 
+def create_message_queue_app():
+
+    app = FastAPI()
+
+    logger = logging.getLogger("uvicorn")
+    logger.setLevel(logging.DEBUG)
+
+    @app.on_event("startup")
+    async def startup():
+        logger.info("API Server is starting...")
+
+    @app.middleware("http")
+    async def add_process_time_header(request: Request, call_next: callable):
+        start_time = time.time()
+        response = await call_next(request)
+        process_time = (time.time() - start_time)
+        formatted_process_time = '{0:.4f}'.format(process_time)
+        logger.info(f"{request.method} {request.url} {formatted_process_time}s")
+        response.headers["X-Process-Time"] = formatted_process_time
+
+        return response
+
+    from api.stt import router as stt_router
+
+    app.include_router(stt_router)
+
     
 
-app = create_async_app()
+    return app
+
+    
+
+# app = create_async_app()
+
+mq_app = create_message_queue_app()
 
