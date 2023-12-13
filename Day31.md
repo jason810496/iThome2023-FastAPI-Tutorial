@@ -157,47 +157,29 @@ if __name__ == '__main__':
 
 ### 為什麼會這樣？
 
-這是因為 **FastAPI** 有一個 **worker** 的概念 <br>
-> 這邊的 worker 不是指 **message queue** 的 worker <br>
+這是因為以 **Uvicorn** 最為 **FastAPI** 的 server <br>
+而 Uvicorn 是以 Muti-threading 的方式來處理 request 的 <br>
 
 <br>
 
-
-
-當我們發出 request 時，FastAPI 會將這個 request 丟給一個 worker 去處理 <br>
-而這個 worker 會一直處理這個 request 直到處理完畢 <br>
-
-<br>
-
-所以當我們發出多個 request 時，會有多個 worker 同時在處理這些 request <br>
+這代表 <br>
+當我們發出 request 時，FastAPI 會將這個 request 丟給一個 thread 去處理 <br>
+而這個 thread 會一直處理這個 request 直到處理完畢 <br>
 
 <br>
 
-但是這些 worker 都是在同一個 process 裡面 <br>
-所以當我們的 CPU 資源不足時，這些 worker 會開始競爭 CPU 資源 <br>
+所以當我們發出多個 request 時，會有多個 thread 同時在處理這些 request <br>
 
 <br>
 
-而這個競爭 CPU 資源的過程，就是我們看到的 response time 變長的原因 <br>
-
-
-
-由於 Python 的 Ｍuti-threading 並不是真的 multi-threading <br>
-是由 GIL (Global Interpreter Lock) 來控制 <br>
+但是這些 thread 都是在同一個 process 裡面 <br>
+所以當我們的 CPU 資源不足時，這些 thread 會開始競爭 CPU 資源 <br>
 
 <br>
 
-這會導我們在處理 CPU bound (需要大量 CPU 資源) 的工作時 <br>
-執行效率會變得很差 <br>
+**這會導我們在處理 CPU bound (需要大量 CPU 資源) 的工作時 <br>
+執行效率會變得很差** <br>
 
-<br>
-
-所以 muti-threading 比較適合處理 I/O bound (需要大量 I/O 資源) 的工作 <br>
-
-在 Python 中，比較推薦使用 **multiprocessing** 來處理 CPU bound 的工作 <br>
-可以充分利用多核心的 CPU 資源 <br>
-
----
 
 ## Message Queue
 
@@ -333,15 +315,156 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 <br>
 
+如果要指定 job 在什麼時候執行 <br>
+可以使用 `enqueue_at` 或 `enqueue_in` <br>
+並且 `worker` 需要加上 `--with-scheduler` 來啟動 scheduler <br>
+> `enqueue_at` : 指定 job 在什麼時間執行，用 `datetime` 來設定 <br>
+> `enqueue_in` : 指定 job 在多久後執行，用 `timedelta` 來設定 <br>
+> [rq : scheduling](https://python-rq.org/docs/scheduling/) <br>
+
+### 管理 Workers
+
+所以這邊我們寫了 `manage_worker.py` 來 **管理 worker** <br>
+因為在 MacOS 中，環境需要設定 `NO_PROXY` 和 `OBJC_DISABLE_INITIALIZE_FORK_SAFETY` <br>
+所以這邊我們使用 `subprocess` 並在 `env` 中設定這兩個環境變數 <br>
+
+```python
+# ...
+subprocess.Popen(
+    ["rq","worker",queue_name,"--name",f"worker-{uuid4().hex[:4]}","--with-scheduler"],
+    env={
+        **os.environ,
+        "OBJC_DISABLE_INITIALIZE_FORK_SAFETY":"YES",
+        "NO_PROXY":"*"
+    }
+)
+# ...
+```
+
+- 可以啟動 n 個 worker
+![start 3 workers](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/start-3-workers.png)
+- 可以停止所有 worker
+![stop all workers](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/stop-all-workers.png)
+
+<br>
+
+## 以 `rq` 實作 非同步 API
+
+### Task API
+原本存 `*.mp4` 檔案同樣是由後端 API 處理 <br>
+> 畢竟 write file 是 I/O bound 的工作 <br>
+> 所以可以由後端 API 處理 <br>
 
 
+我們可以將原本的 `/api/stt.py` 改成 <br>
+```python
+@router.post("/task")
+async def create_message_queue_task(file: UploadFile = File(...)):
+    # save file
+    # ...
+
+    # create STT job
+    try:
+        job = task_queue.enqueue(
+            get_text_from_video,
+            hash_name,
+            on_success=Callback(report_success),
+            on_failure=Callback(report_failed),
+            ttl=30, # 30 sec timeout
+            failure_ttl=60, # 1 minute cleanup for failed job
+            result_ttl=180, # result will be kept for 3 minutes
+        )
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e)  )
+    # ...
+```
+可以看到我們將 `get_text_from_video` 丟到 job queue 中 <br>
+並設定 Callback function 和 timeout 參數 : <br>
+- `ttl` : 這個 job 執行多久後會被判斷為 timeout
+- `failure_ttl` : 這個 job 執行失敗後，多久後會被刪除
+- `result_ttl` : 這個 job 執行成功後，多久後會被刪除
+> 這邊的 **刪除** 是指從 Redis 中刪除 <br>
+
+<br>
+
+並加上清除 `*.mp4` 和 `*.wav` 檔案的 job <br>
+但是這個 job 要等 STT job 執行完畢後才能執行 <br>
+所以這邊使用 `enqueue_in` 來設定 <br>
+```python
+@router.post("/task")
+async def create_message_queue_task(file: UploadFile = File(...)):
+    # create STT job
+    # ...
+
+    # clean up file job
+    try:
+        clean_job = task_queue.enqueue_in(
+            timedelta(seconds=60),
+            clean_file,
+            hash_name,
+            ttl=10, # 5 minutes timeout
+            failure_ttl=20, # 5 minutes cleanup
+            result_ttl=20, # 5 minutes cleanup
+        )
+        print("clean job", clean_job.get_id())
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e)  )
+    
+    return {
+        "job_id": job.get_id(),
+        "file_id": hash_name,
+    }
+```
+並在最後回傳 job id 和 file id 給前端 <br>
+
+### Result API
+
+我們的 task API 回傳了 job id 給前端 <br>
+所以前端可以透過 job id 來查詢當前 job 的狀態 <br>
+使用 `Job.fetch` 來取得 job <br>
+`/api/stt.py` <br>
+```python
+@router.get("/task/{job_id}")
+async def get_message_queue_result(job_id: str):
+    try:
+        job = Job.fetch(job_id, connection=redis_conn)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e)  )
+
+    if job.is_finished:
+        return {"job_id": job_id, "text": job.result}
+    
+    return {
+        "job_id": job_id,
+        "status":"processing"
+    }
+```
+並使用 `Job.is_finished` 來判斷 job 是否執行完畢 <br>
+如果執行完畢，就回傳 job id 和結果 <br>
+
+### Benchmark
+
+在 **3 個 workers** 的環境同時送出 **10 個 request** <br>
+![10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/3-workers-10-requests.png)
+可以看到最慢的 job 從進入 job queue 到執行完畢花了 **25.4** 秒 <br>
+比 Naive Solution 的 **48.4** 快了 **一倍** <br>
+
+<br>
 
 
+在 **10 個 workers** 的環境同時送出 **10 個 request** <br>
+![10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/10-workers-10-requests.png)
+可以看到最慢的 job 從進入 job queue 到執行完畢花了 **16** 秒 <br>
+比 Naive Solution 的 **48.4** 快了 **三倍** <br>
+
+<br>
+
+## 總結
 
 
-
-
-> [rq : performance note](https://python-rq.org/docs/workers/#performance-notes)
 
 ## Reference
 - [python run command line code](https://stackabuse.com/executing-shell-commands-with-python/)
@@ -352,3 +475,4 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 - [REST API with an asynchronous task queue cluster](https://cloud.tencent.com/developer/article/1943402)
 - [install yolo inside docker container](https://lindevs.com/install-yolov8-inside-docker-container-in-linux)
 - [Python RabbitMQ 異常重啟機制 Pika重連機制](https://www.jianshu.com/p/60cdc45207cd) 
+> [rq : performance note](https://python-rq.org/docs/workers/#performance-notes)
