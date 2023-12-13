@@ -41,31 +41,31 @@ async def native_processing(file: UploadFile = File(...)):
 
 @router.post("/task")
 async def create_message_queue_task(file: UploadFile = File(...)):
+    # save file
     save_path = settings.upload_path
     ext_name = file.filename.split(".")[-1]
     hash_name = uuid4().hex[:8]
-
     out_file_path = f"{save_path}/{hash_name}.{ext_name}"
+
     async with aiofiles.open(out_file_path, 'wb') as out_file:
         content = await file.read()  # async read
         await out_file.write(content)  # async write
 
+    # create STT job
     try:
-
         job = task_queue.enqueue(
             get_text_from_video,
             hash_name,
             on_success=Callback(report_success),
             on_failure=Callback(report_failed),
-            ttl=30, # 3 minutes timeout
-            failure_ttl=60, # 5 minutes cleanup
-            result_ttl=180, # 5 minutes cleanup
+            ttl=30, # 30 sec timeout
+            failure_ttl=60, # 1 minute cleanup for failed job
+            result_ttl=180, # result will be kept for 3 minutes
         )
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e)  )
     
-
     # clean up file job
     try:
         clean_job = task_queue.enqueue_in(
