@@ -40,7 +40,7 @@ if __name__ == "__main__":
         for i in range(n):
             # run `rq worker rq` command
             subprocess.Popen(
-                ["rq","worker",queue_name,"--name",f"worker-{uuid4().hex[:4]}"],
+                ["rq","worker",queue_name,"--name",f"worker-{uuid4().hex[:4]}","--with-scheduler"],
                 env={
                     **os.environ,
                     "OBJC_DISABLE_INITIALIZE_FORK_SAFETY":"YES",
