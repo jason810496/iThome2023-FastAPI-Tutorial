@@ -1,4 +1,4 @@
-## [[Day31]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31) Message Queue 初探(1) : 以 Redis 作為 Message Queue 執行 STT 和 YOLO object detection
+## [[Day31]](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31) Message Queue 初探(1) : 以 Redis 作為 Message Queue 執行 Speech Recognition
 
 ##  前言
 
