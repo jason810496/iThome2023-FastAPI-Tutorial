@@ -3,9 +3,10 @@ from multiprocessing import Pool
 import time
 
 file_name = "sample1.mp4"
-url = "http://0.0.0.0:8001/stt/native"
+# url = "http://0.0.0.0:8001/stt/native"
+url = "http://0.0.0.0:8001/stt/task"
 
-urls = [url for _ in range(5)]
+urls = [url for _ in range(10)]
 
 def upload(url):
     subprocess.call(['curl', '-H', 'Content-Type: multipart/form-data', '-X', 'POST', '-F', f"file=@{file_name};type=video/mp4", url])   
