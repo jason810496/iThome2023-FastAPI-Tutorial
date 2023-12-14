@@ -488,4 +488,4 @@ async def get_message_queue_result(job_id: str):
 - [REST API with an asynchronous task queue cluster](https://cloud.tencent.com/developer/article/1943402)
 - [install yolo inside docker container](https://lindevs.com/install-yolov8-inside-docker-container-in-linux)
 - [Python RabbitMQ 異常重啟機制 Pika重連機制](https://www.jianshu.com/p/60cdc45207cd) 
-> [rq : performance note](https://python-rq.org/docs/workers/#performance-notes)
+- [rq : performance note](https://python-rq.org/docs/workers/#performance-notes)
