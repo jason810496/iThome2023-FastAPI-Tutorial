@@ -146,6 +146,7 @@ if __name__ == '__main__':
 
 執行 `python3 parallel_upload.py` <br>
 ![native parallel upload](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/native-parallel-upload.png)
+> 同時發出 5 個 request，等全部都收到 response 的總時間
 可以看到總共花費了快 **50** 秒才收到所有的 response <br>
 
 <br>
@@ -448,7 +449,7 @@ async def get_message_queue_result(job_id: str):
 ### Benchmark
 
 在 **3 個 workers** 的環境同時送出 **10 個 request** <br>
-![10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/3-workers-10-requests.png)
+![3 workers 10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/3-workers-10-requests.png)
 可以看到最慢的 job 從進入 job queue 到執行完畢花了 **25.4** 秒 <br>
 比 Naive Solution 的 **48.4** 快了 **一倍** <br>
 
@@ -456,13 +457,25 @@ async def get_message_queue_result(job_id: str):
 
 
 在 **10 個 workers** 的環境同時送出 **10 個 request** <br>
-![10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/10-workers-10-requests.png)
-可以看到最慢的 job 從進入 job queue 到執行完畢花了 **16** 秒 <br>
+![10 workers 10 requests](https://raw.githubusercontent.com/jason810496/iThome2023-FastAPI-Tutorial/Images/assets/Day31/10-workers-10-requests.png)
+可以看到最慢的 job 從進入 job queue 到執行完畢花了 **14** 秒 <br>
 比 Naive Solution 的 **48.4** 快了 **三倍** <br>
 
 <br>
 
 ## 總結
+
+今天我們使用 `rq` 來實作 message queue <br>
+並將原本的 API 改成非同步的 API <br>
+可以看到在 **10 個 workers** 的環境下 <br>
+比 Naive Solution 快了 **三倍** <br>
+
+<br>
+
+所以對於 **需要大量 CPU 資源** 的工作 <br>
+或是 **需要花費大量時間** 的工作 <br>
+可以考慮使用 message queue 來處理 !<br>
+
 
 
 
