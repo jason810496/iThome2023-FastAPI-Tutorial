@@ -34,6 +34,9 @@ aiofiles = "^23.2.1"
 speechrecognition = "^3.10.1"
 moviepy = "^1.0.3"
 rq = "^1.15.1"
+celery = "^5.3.6"
+ultralytics = "^8.0.231"
+flower = "^2.0.1"
 
 
 [build-system]
