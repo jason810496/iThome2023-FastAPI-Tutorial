@@ -54,8 +54,7 @@ Welcome to have any discussion with me about this tutorial 🙌<br>
 - [[Day29] FastAPI : Refactoring & CROS 設定](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day29)
 - [[Day30] FastAPI 系列：山重水複疑無路，柳暗花明又一村](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day30)
 
-**在 Day31 ~ Day33 : Event Drive 與 Rate Limit 實作** <br>
-- [[Day31] Message Queue 初探(1) : 以 Redis 作為 Message Queue 執行 Speech Recognition](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31)
+**在 Day31 ~ Day33 : Pub/Sub 與 Rate Limit 實作** <br>
+- [[Day31] Message Queue 初探(1) : 以 Redis 作為簡易 Message Queue](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day31)
 - [[Day32] Message Queue 初探(2) : 以 Celery + RabbitMQ 作為可監控式 Message Broker](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day32)
 - [[Day33] FastAPI : 以 Redis 實作 Rate Limit Middleware](https://github.com/jason810496/iThome2023-FastAPI-Tutorial/tree/Day33)
-    
