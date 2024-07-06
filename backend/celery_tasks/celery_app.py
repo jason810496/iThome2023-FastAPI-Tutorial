@@ -7,7 +7,7 @@ app = Celery(
     broker=os.environ.get("CELERY_BROKER_URL", "amqp://guest@localhost//"),
     backend=os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0"),
     include=["celery_tasks.tasks"],
-    result_expires=3600,
+    result_expires=60,
 )
 
 if __name__ == "__main__":

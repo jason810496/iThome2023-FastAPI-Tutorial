@@ -103,10 +103,18 @@ def create_message_queue_app():
         return response
 
     from api.stt import router as stt_router
+    from api.yolo import router as yolo_router
 
     app.include_router(stt_router)
+    app.include_router(yolo_router)
 
-    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     return app
 

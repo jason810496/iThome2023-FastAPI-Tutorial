@@ -1,0 +1,68 @@
+version: '1.0'
+
+services:
+
+  redis_db:
+    image: redis:7.2.1
+    expose:
+      - 6379
+    env_file:
+      - db.redis.env
+    restart: always
+    volumes:
+      - ./db_volumes/redis:/data/
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 3
+  
+  rabbitmq:
+    image: rabbitmq:3.9.7-management
+    expose:
+      - 5672
+      - 15672
+    env_file:
+      - rabbitmq.env
+    restart: always
+    volumes:
+      - ./db_volumes/rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 2s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    build: ./backend
+    volumes:
+      - ./backend/:/usr/backend/
+    command: celery -A rmq worker --loglevel=info
+    env_file:
+      - ./backend/.env/.mq.env
+    restart: always
+    depends_on:
+      redis_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  backend:
+    build: ./backend
+    ports:
+      - 8000:8003
+    volumes:
+      - ./backend/:/usr/backend/
+    command: python3 run.py --mq
+    env_file:
+      - ./backend/.env/.mq.env
+    restart: always
+    depends_on:
+      redis_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+networks:
+  default: 
+    name: fastapi_tutorial_network

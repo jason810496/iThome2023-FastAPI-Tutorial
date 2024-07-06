@@ -8,6 +8,7 @@
 
 昨天是以 `STT` (Speech To Text) 作為範例 <br>
 今天我們將會以 **影像辨識** ( 這邊使用 `YOLO` ) 作為範例 <br>
+> 但 `YOLO` 的部分我們不會特別去介紹 <br>
 
 <br>
 
@@ -62,6 +63,13 @@ Redis 和 RabbitMQ 都可以作為 Message Queue <br>
 又如果: 在處理 **即時性** 的資料 <br>
 使用 **Redis** 來作為 Message Queue 會比較好 <br>
 
+
+> - [Medium : Redis vs RabbitMQ](https://medium.com/@contact_45426/redis-vs-rabbitmq-a-detailed-comparison-998ed1ba7fc2)
+> - [AWS : Redis vs RabbitMQ](https://aws.amazon.com/tw/compare/the-difference-between-rabbitmq-and-redis/)
+> - [知乎 : Redis vs RabbitMQ](https://zhuanlan.zhihu.com/p/41850085)
+> - [RDB vs AOF](https://hackmd.io/@KaiChen/S1Bj9dgm9)
+
+
 ## Celery 和 Flower
 
 Celery 是一個 Python 的非同步任務佇列/任務調度器 <br>
@@ -73,6 +81,14 @@ Celery 本身提供了一個 `Flower`( Web UI 介面 ) 來監控 Celery 的狀�
 可以透過 `Flower` 來監控 `RabbitMQ` 的狀態 <br>
 
 <br>
+
+### Celery 和 Flower 安裝
+
+只需要透過 `pip` 來安裝即可 <br>
+```bash
+pip install celery
+pip install flower
+```
 
 ### Celery Broker
 
@@ -87,21 +103,15 @@ Backend 是 Celery 用來 **儲存任務結果** 的設定 <br>
 如: `SQLAlchemy` 、 `Django ORM` 、 `MongoDB` 、 `Cassandra` 等 <br>
 甚至可以使用 `RPC` 、`S3`或 `filesystem` 來作為 Backend <br>
 
-> [celery result backend](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-result_backend)
+> [celery result backend 列表](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-result_backend)
 
 ### Celery Worker
 
 Celery Worker 是 Celery 用來執行任務的 process instance <br>
 可以透過 `celery multi` 來啟動多個 Celery Worker <br>
-需要透過 Celery App Instance 的 `task` decorator 來註冊任務 <br>
+需要透過 Celery App Instance 的 `task` **decorator** 來註冊任務 <br>
 
-## Celery 安裝
 
-只需要透過 `pip` 來安裝即可 <br>
-```bash
-pip install celery
-pip install flower
-```
 
 ### Celery
 
@@ -110,33 +120,81 @@ pip install flower
 ```python
 from __future__ import absolute_import, unicode_literals
 from celery import Celery
+import os
 
-app = Celery('rmq',
-             broker='amqp://',
-             backend='amqp://',
-             include=['celery_tasks.tasks']
+app = Celery(
+    "rmq",
+    broker=os.environ.get("CELERY_BROKER_URL", "amqp://guest@localhost//"),
+    backend=os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0"),
+    include=["celery_tasks.tasks"],
+    result_expires=60,
 )
 
-# Optional configuration, see the application user guide.
-app.conf.update(
-    result_expires=3600,
-)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.start()
 ```
 
-可以使用 : <br> 
-- `broker` : 作為 Message Queue 的 connection URL <br>
-- `backend` : 作為 Celery 結果的 connection URL <br>
+- `include` : Celery Task 的 import path
+- `result_expires` : Celery Task 的結果過期時間
+
+### Celery Task
+
+Celery Task 的設定如下 <br>
+`/celery_tasks/tasks.py` <br>
+```python   
+from __future__ import absolute_import, unicode_literals
+from celery_tasks.celery_app import app
+from celery import subtask
+
+@app.task
+def add(x, y):
+    import time
+    time.sleep(5)
+    return x + y
+
+@app.task
+def crawler(url: str):
+    import requests
+    res = requests.get(url)
+    return res.json()
+
+@app.task(bind=True)
+def bind_task(self, x, y):
+    task_id = self.request.id
+    return {"task_id": task_id, "result": x + y}
+
+@app.task
+def callback_task(x, y):
+    import time
+    time.sleep(5)
+    subtask("celery_tasks.tasks.crawler").delay("https://httpbin.org/get")
+    return x + y
+```
+
+可以注意到 <br>
+- 如果 task 需要用到其他 module 的話 <br>
+    需要在 task 內部 import <br>
+- 如果 task 內部需要 **自己的 task id** 的話 <br>
+    需要使用 `bind=True` 來設定 <br>
+- 如果 task 內部需要 **callback** 的話 <br>
+    可以用 `subtask` 來達成 <br>
+
+## 執行 Celery
+
+worker : 
+```bash
+celery -A celery_tasks.tasks worker -l info
+```
+
+flower : 
+```bash
+celery -A celery_tasks.tasks flower
+```
+
 
 ## YOLO 
 
 ### reference
-- [Medium : Redis vs RabbitMQ](https://medium.com/@contact_45426/redis-vs-rabbitmq-a-detailed-comparison-998ed1ba7fc2)
-- [AWS : Redis vs RabbitMQ](https://aws.amazon.com/tw/compare/the-difference-between-rabbitmq-and-redis/)
-- [知乎 : Redis vs RabbitMQ](https://zhuanlan.zhihu.com/p/41850085)
-- [RDB vs AOF](https://hackmd.io/@KaiChen/S1Bj9dgm9)
 
 
 ## RabbitMQ 設定
@@ -147,8 +205,30 @@ if __name__ == '__main__':
 docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
 
+## 
 
 
+## run command : 
+
+backend : 
+```bash
+python3 run.py --mq
+```
+
+worker : 
+```bash
+celery -A celery_tasks.tasks worker -l info
+```
+
+flower : 
+```bash
+celery -A celery_tasks.tasks flower
+```
+
+frontend : 
+```bash
+python3 run.py
+```
 
 ## Reference
 - Redis vs Message Queue
